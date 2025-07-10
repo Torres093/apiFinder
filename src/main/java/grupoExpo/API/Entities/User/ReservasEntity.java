@@ -1,4 +1,9 @@
 package grupoExpo.API.Entities.User;
 
-public class ReservasEntity {
+
+import jakarta.persistence.Entity;
+
+@Entity
+public class ReservasEntity
+{
 }
