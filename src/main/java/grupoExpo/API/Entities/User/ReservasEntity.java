@@ -29,5 +29,5 @@ public class ReservasEntity
     @Column(name = "FECHARESERVA")
     private Date fechaReserva;
     @Column(name = "PRECIOTOTALRESERVA")
-    private
+    private double precioTotalReserva;
 }
