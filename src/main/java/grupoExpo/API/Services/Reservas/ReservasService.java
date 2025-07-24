@@ -85,7 +85,7 @@ public class ReservasService {
         return convertirAReservasDTO(reservaActualizada);
     }
 
-    public boolean eliminarHabitacion(String id) {
+    public boolean eliminarReserva(String id) {
         try {
             //1. Validar existencia de la reserva
             ReservasEntity existente = repo.findById(id).orElse(null);

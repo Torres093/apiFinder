@@ -86,7 +86,7 @@ public class ReservasController {
     @DeleteMapping("/eliminarReservas/{id}")
     public ResponseEntity<?> eliminarReserva(@PathVariable String id){
         try{
-            if(!acceso.eliminarHabitacion(id)){
+            if(!acceso.eliminarReserva(id)){
                 //Error
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .header("Mensaje: error", "Reserva no encontrada")
