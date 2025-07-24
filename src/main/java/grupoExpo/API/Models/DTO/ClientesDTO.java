@@ -1,20 +1,20 @@
 package grupoExpo.API.Models.DTO;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.util.Date;
+import java.util.UUID;
 
 @ToString @EqualsAndHashCode
 @Getter @Setter
 public class ClientesDTO {
 
-    private byte[] idCliente;
+    private String idCliente;
 
-    private byte[] idUsuario;
+    @NotBlank(message = "El Usuario es obligatorio")
+    private String idUsuario;
 
     @NotBlank(message = "El nombre es obligatorio")
     private String nombreCliente;
@@ -25,7 +25,8 @@ public class ClientesDTO {
     @NotBlank(message = "El dui es obligatorio")
     private String duiCliente;
 
-    @NotBlank(message = "La fecha de nacimiento es obligatoria")
+    //@NotBlank(message = "La fecha de nacimiento es obligatoria")
+    @NotNull(message = "La fecha de nacimiento es obligatoria")
     private Date nacimientoCliente;
 
 }

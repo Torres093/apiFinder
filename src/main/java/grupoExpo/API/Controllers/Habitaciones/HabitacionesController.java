@@ -1,12 +1,10 @@
-package grupoExpo.API.Controllers.Reservas;
+package grupoExpo.API.Controllers.Habitaciones;
 
 import grupoExpo.API.Exceptions.Habitaciones.ExcepcionDatosDuplicadosHabitacion;
 import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoEncontrada;
-import grupoExpo.API.Exceptions.Reservas.ExcepcionDatosDuplicadosReserva;
-import grupoExpo.API.Exceptions.Reservas.ExcepcionReservaNoEncontrada;
+import grupoExpo.API.Models.DTO.ClientesDTO;
 import grupoExpo.API.Models.DTO.HabitacionesDTO;
-import grupoExpo.API.Models.DTO.ReservasDTO;
-import grupoExpo.API.Services.Reservas.ReservasService;
+import grupoExpo.API.Services.Habitaciones.HabitacionesService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,23 +17,24 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
-public class ReservasController {
+public class HabitacionesController {
 
     @Autowired
-    private ReservasService acceso;
+    private HabitacionesService acceso;
 
-    @GetMapping("/consultarReservas")
-    public List<ReservasDTO> datosReservas(){
-        return acceso.getAllReservas();
+    @GetMapping("/consultarHabitaciones")
+    public List<HabitacionesDTO> datosHabitaciones(){
+        return acceso.getAllHabitaciones();
     }
     //Insertar Datos
-    @PostMapping("/registrarReservas")
-    public ResponseEntity<?> nuevaReserva(@Valid @RequestBody ReservasDTO json, HttpServletRequest request){
+    @PostMapping("/registrarHabitaciones")
+    public ResponseEntity<?> nuevaHabitacion(@Valid @RequestBody HabitacionesDTO json, HttpServletRequest request){
         try {
-            ReservasDTO respuesta = acceso.insertarDatos(json);
+            HabitacionesDTO respuesta = acceso.insertarDatos(json);
             if(respuesta == null){
                 return ResponseEntity.badRequest().body(Map.of(
                         "status", "Inserción fallida",
@@ -51,16 +50,16 @@ public class ReservasController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of(
                             "status", "Error",
-                            "message", "Error no controlado al registrar la reserva",
+                            "message", "Error no controlado al registrar la habitacion",
                             "detail", e.getMessage()
                     ));
         }
     }
     //Actualizar datos
-    @PutMapping("actualizarReservas/{id}")
-    public ResponseEntity<?> modificarReserva(
+    @PutMapping("actualizarHabitaciones/{id}")
+    public ResponseEntity<?> modificarHabitacion(
             @PathVariable String id,
-            @Valid @RequestBody ReservasDTO json,
+            @Valid @RequestBody HabitacionesDTO json,
             BindingResult bindingResult
     ){
         if(bindingResult.hasErrors()){
@@ -70,40 +69,40 @@ public class ReservasController {
             return  ResponseEntity.badRequest().body(errores);
         }
         try {
-            //Creamos un objeto de tipo DTO y se invoca en el metodo "actualizarReserva" que esta en el service
-            ReservasDTO dto = acceso.actualizarReserva(id, json);
+            //Creamos un objeto de tipo DTO y se invoca en el metodo "actualizarHabitacion" que esta en el service
+            HabitacionesDTO dto = acceso.actualizarHabitacion(id, json);
             //La API retorna una respuesta la cual contendra los datos en formato DTO
             return ResponseEntity.ok(dto);
-        }catch (ExcepcionReservaNoEncontrada e){
+        }catch (ExcepcionHabitacionNoEncontrada e){
             return ResponseEntity.notFound().build();
         }
-        catch (ExcepcionDatosDuplicadosReserva e){
+        catch (ExcepcionDatosDuplicadosHabitacion e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     Map.of("Error", "Datos duplicados", "Campo", e.getCampoDuplicado())
             );
         }
     }
-    @DeleteMapping("/eliminarReservas/{id}")
-    public ResponseEntity<?> eliminarReserva(@PathVariable String id){
+    @DeleteMapping("/eliminarHabitaciones/{id}")
+    public ResponseEntity<?> eliminarHabitacion(@PathVariable String id){
         try{
             if(!acceso.eliminarHabitacion(id)){
                 //Error
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .header("Mensaje: error", "Reserva no encontrada")
+                        .header("Mensaje: error", "Habitacion no encontrada")
                         .body(Map.of("Error", "Not found",
-                                "Mensaje", "La reserva no fue encontrada",
+                                "Mensaje", "La habitacion no fue encontrada",
                                 "timestamp", Instant.now().toString()
                         ));
             }
             //Exitoso
             return ResponseEntity.ok().body(Map.of(
                     "status", "Proceso completado",
-                    "message", "Reserva eliminada exitosamente"
+                    "message", "Habitacion eliminada exitosamente"
             ));
         }catch (Exception e){
             return ResponseEntity.internalServerError().body(Map.of(
                     "status", "Error",
-                    "message", "Error al eliminar la reserva",
+                    "message", "Error al eliminar la habitacion",
                     "detail", e.getMessage()
             ));
         }
