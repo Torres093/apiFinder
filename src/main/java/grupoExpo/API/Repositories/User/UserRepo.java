@@ -1,4 +1,7 @@
 package grupoExpo.API.Repositories.User;
 
-public interface UserRepo {
+import grupoExpo.API.Entities.User.UserEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepo extends JpaRepository<UserEntity, Long> {
 }
