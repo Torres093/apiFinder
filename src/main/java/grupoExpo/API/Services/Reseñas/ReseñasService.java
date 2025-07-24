@@ -2,15 +2,19 @@ package grupoExpo.API.Services.Reseñas;
 
 import grupoExpo.API.Entities.Reservas.ReservasEntity;
 import grupoExpo.API.Entities.Reseñas.ReseñasEntity;
+import grupoExpo.API.Exceptions.Reservas.ExcepcionReservaNoEncontrada;
 import grupoExpo.API.Exceptions.Reservas.ExcepcionReservaNoRegistrada;
+import grupoExpo.API.Exceptions.Reseñas.ExcepcionReseñaNoEncontrada;
 import grupoExpo.API.Exceptions.Reseñas.ExcepcionReseñaNoRegistrada;
 import grupoExpo.API.Models.DTO.ReseñasDTO;
 import grupoExpo.API.Repositories.Reseñas.ReseñasRepository;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,5 +65,35 @@ public class ReseñasService {
         entity.setComentarioReseña(data.getComentarioReseña());
         entity.setCalificacionReseña(data.getCalificacionReseña());
         return entity;
+    }
+
+    public ReseñasDTO actualizarReseña(String id, ReseñasDTO json) {
+        //1. Verificar la existencia de la reseña.
+        ReseñasEntity existente = repo.findById(id).orElseThrow(() -> new ExcepcionReseñaNoEncontrada("Reseña no encontrada"));
+        //2. Actualizar los campos
+        existente.setIdCliente(json.getIdCliente());
+        existente.setIdHotel(json.getIdHotel());
+        existente.setComentarioReseña(json.getComentarioReseña());
+        existente.setCalificacionReseña(json.getCalificacionReseña());
+        //3. Guardar los cambios
+        ReseñasEntity reseñaActualizada = repo.save(existente);
+        //4. Convertir los datos a DTO y retornarlos
+        return convertirAReseñasDTO(reseñaActualizada);
+    }
+
+    public boolean eliminarReseña(String id) {
+        try {
+            //1. Validar existencia de la reseña
+            ReseñasEntity existente = repo.findById(id).orElse(null);
+            //2. Eliminar la reseña, si existe retornar true. Si no existe retornar false
+            if(existente != null){
+                repo.deleteById(id);
+                return true;
+            }else {
+                return false;
+            }
+        }catch (EmptyResultDataAccessException e){
+            throw new EmptyResultDataAccessException("No se encontro la reseña con ID: " + id + "para eliminar. ", 1);
+        }
     }
 }
