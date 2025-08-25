@@ -1,6 +1,7 @@
 package grupoExpo.API.Entities.Reservas;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
@@ -10,6 +11,7 @@ import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -33,9 +35,9 @@ public class ReservasEntity {
     private String idMetodoPago;
 
     @Column(name = "FECHARESERVA")
-    @Temporal(TemporalType.DATE)
-    private Date fechaReserva;
+    private LocalDate fechaReserva;
 
     @Column(name = "PRECIOTOTALRESERVA", precision = 14, scale = 2)
+    @Digits(integer = 12, fraction = 2, message = "El valor debe tener como maximo 12 digitos enteros y 2 decimales")
     private BigDecimal precioTotalReserva;
 }

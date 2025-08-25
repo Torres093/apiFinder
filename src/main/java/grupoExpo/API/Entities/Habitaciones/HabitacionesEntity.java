@@ -1,7 +1,11 @@
 package grupoExpo.API.Entities.Habitaciones;
 
+import grupoExpo.API.Entities.EstadosHabitacion.EstadosHabitacionEntity;
+import grupoExpo.API.Entities.Hotel.HotelEntity;
+import grupoExpo.API.Entities.TiposHabitacion.TiposHabitacionEntity;
 import grupoExpo.API.Utils.Convertidor;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,16 +29,19 @@ public class HabitacionesEntity {
     private String idHabitacion;
 
     //@Convert(converter = Convertidor.class)
-    @Column(name = "IDTIPOHABITACION", columnDefinition = "RAW(16)")
-    private String idTipoHabitacion;
+    @ManyToOne
+    @JoinColumn(name = "IDTIPOHABITACION", referencedColumnName = "IDTIPOHABITACION", columnDefinition = "RAW(16)")
+    private TiposHabitacionEntity TipoHabitacion;
 
     //@Convert(converter = Convertidor.class)
-    @Column(name = "IDHOTEL", columnDefinition = "RAW(16)")
-    private String idHotel;
+    @ManyToOne
+    @JoinColumn(name = "IDHOTEL", referencedColumnName = "IDHOTEL", columnDefinition = "RAW(16)")
+    private HotelEntity Hotel;
 
     //@Convert(converter = Convertidor.class)
-    @Column(name = "IDESTADOHABITACION", columnDefinition = "RAW(16)")
-    private String idEstadoHabitacion;
+    @ManyToOne
+    @JoinColumn(name = "IDESTADOHABITACION", referencedColumnName = "IDESTADOHABITACION", columnDefinition = "RAW(16)")
+    private EstadosHabitacionEntity EstadoHabitacion;
 
     @Column(name = "NUMEROHABITACION")
     private int numeroHabitacion;
@@ -43,6 +50,7 @@ public class HabitacionesEntity {
     private String descripcionHabitacion;
 
     @Column(name = "PRECIOHABITACION", precision = 7, scale = 2)
+    @Digits(integer = 5, fraction = 2, message = "El valor debe tener como maximo 5 digitos enteros y 2 decimales")
     private BigDecimal precioHabitacion;
 
     @Column(name = "CAPACIDADHABITACION")

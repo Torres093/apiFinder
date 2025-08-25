@@ -1,0 +1,118 @@
+package grupoExpo.API.Services.Hotel;
+
+import grupoExpo.API.Entities.Hotel.HotelEntity;
+import grupoExpo.API.Entities.TiposHotel.TiposHotelEntity;
+import grupoExpo.API.Exceptions.Hotel.ExcepcionHotelNoEncontrado;
+import grupoExpo.API.Exceptions.Hotel.ExcepcionHotelNoRegistrado;
+import grupoExpo.API.Models.DTO.HotelDTO;
+import grupoExpo.API.Repositories.Hotel.HotelRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Slf4j
+@Service
+public class HotelService {
+
+    @Autowired
+    private HotelRepository repo;
+
+    public List<HotelDTO> getAllHotel() {
+        List<HotelEntity> hotel = repo.findAll();
+        return hotel.stream()
+                .map(this::convertirAHotelDTO)
+                .collect(Collectors.toList());
+    }
+
+    private HotelDTO convertirAHotelDTO(HotelEntity hotel) {
+        HotelDTO dto = new HotelDTO();
+
+        dto.setIdHotel(hotel.getIdHotel());
+        dto.setIdTipoHotel(hotel.getTipoHotel().getIdTipoHotel());
+        dto.setNombreHotel(hotel.getNombreHotel());
+        dto.setUbicacionHotel(hotel.getUbicacionHotel());
+        dto.setCorreoHotel(hotel.getCorreoHotel());
+        dto.setFechaCreacionHotel(hotel.getFechaCreacionHotel());
+        dto.setTelefonoHotel(hotel.getTelefonoHotel());
+        dto.setImagenHotel(hotel.getImagenHotel());
+        dto.setNumeroHabitacionesHotel(hotel.getNumeroHabitacionesHotel());
+        return dto;
+    }
+
+    public HotelDTO insertarDatos(HotelDTO data) {
+        if (data == null){
+            throw new IllegalArgumentException("No se puede enviar valores nulos");
+        }
+        try{
+            HotelEntity entity = ConvertirAEntity(data);
+            HotelEntity hotelGuardado = repo.save(entity);
+            return convertirAHotelDTO(hotelGuardado);
+        }catch (Exception e){
+            log.error("Error al registrar el hotel: " + e.getMessage());
+            throw new ExcepcionHotelNoRegistrado("Error al registrar el hotel.");
+        }
+    }
+
+    private HotelEntity ConvertirAEntity(HotelDTO data) {
+        HotelEntity entity = new HotelEntity();
+
+        //Asignando TipoHotel a entity de Hotel
+        TiposHotelEntity tiposHotel= new TiposHotelEntity();
+        tiposHotel.setIdTipoHotel(data.getIdTipoHotel()); // Esto es un String, asumiendo que es el ID del TipoHotel
+        entity.setTipoHotel(tiposHotel);
+
+        //Asignando atributos de DTO a entity
+        entity.setNombreHotel(data.getNombreHotel());
+        entity.setUbicacionHotel(data.getUbicacionHotel());
+        entity.setCorreoHotel(data.getCorreoHotel());
+        entity.setFechaCreacionHotel(data.getFechaCreacionHotel());
+        entity.setTelefonoHotel(data.getTelefonoHotel());
+        entity.setImagenHotel(data.getImagenHotel());
+        entity.setNumeroHabitacionesHotel(data.getNumeroHabitacionesHotel());
+        return entity;
+    }
+
+    public HotelDTO actualizarHotel(String id, HotelDTO json) {
+        //1. Verificar la existencia del Hotel.
+        HotelEntity existente = repo.findById(id).orElseThrow(() -> new ExcepcionHotelNoEncontrado("Hotel no encontrado"));
+        //2. Actualizar los campos
+
+        //Asignando TipoHotel a entity de Hotel
+        TiposHotelEntity tiposHotel= new TiposHotelEntity();
+        tiposHotel.setIdTipoHotel(json.getIdTipoHotel()); // Esto es un String, asumiendo que es el ID del TipoHotel
+        existente.setTipoHotel(tiposHotel);
+
+        //Asignando atributos de DTO a entity
+        existente.setNombreHotel(json.getNombreHotel());
+        existente.setUbicacionHotel(json.getUbicacionHotel());
+        existente.setCorreoHotel(json.getCorreoHotel());
+        existente.setFechaCreacionHotel(json.getFechaCreacionHotel());
+        existente.setTelefonoHotel(json.getTelefonoHotel());
+        existente.setImagenHotel(json.getImagenHotel());
+        existente.setNumeroHabitacionesHotel(json.getNumeroHabitacionesHotel());
+        //3. Guardar los cambios
+        HotelEntity hotelActualizado = repo.save(existente);
+        //4. Convertir los datos a DTO y retornarlos
+        return convertirAHotelDTO(hotelActualizado);
+    }
+
+    public boolean eliminarHotel(String id) {
+        try {
+            //1. Validar existencia del hotel
+            HotelEntity existente = repo.findById(id).orElse(null);
+            //2. Eliminar el hotel, si existe retornar true. Si no existe retornar false
+            if(existente != null){
+                repo.deleteById(id);
+                return true;
+            }else {
+                return false;
+            }
+        }catch (EmptyResultDataAccessException e){
+            throw new EmptyResultDataAccessException("No se encontro el hotel con ID: " + id + " para eliminar. ", 1);
+        }
+    }
+}

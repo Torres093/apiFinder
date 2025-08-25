@@ -12,6 +12,7 @@ import java.util.UUID;
 @ToString @EqualsAndHashCode
 @Getter @Setter
 public class HabitacionesDTO {
+
     private String idHabitacion;
 
     @NotBlank(message = "El Tipo de Habitacion es obligatorio")

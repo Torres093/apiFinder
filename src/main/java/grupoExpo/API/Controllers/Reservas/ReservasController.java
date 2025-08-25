@@ -31,6 +31,7 @@ public class ReservasController {
     public List<ReservasDTO> datosReservas(){
         return acceso.getAllReservas();
     }
+
     //Insertar Datos
     @PostMapping("/registrarReservas")
     public ResponseEntity<?> nuevaReserva(@Valid @RequestBody ReservasDTO json, HttpServletRequest request){

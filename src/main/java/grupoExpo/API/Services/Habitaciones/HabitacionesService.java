@@ -1,15 +1,13 @@
 package grupoExpo.API.Services.Habitaciones;
 
-import grupoExpo.API.Entities.Clientes.ClientesEntity;
+import grupoExpo.API.Entities.EstadosHabitacion.EstadosHabitacionEntity;
 import grupoExpo.API.Entities.Habitaciones.HabitacionesEntity;
-import grupoExpo.API.Exceptions.Clientes.ExcepcionClienteNoEncontrado;
-import grupoExpo.API.Exceptions.Clientes.ExcepcionClienteNoRegistrado;
+import grupoExpo.API.Entities.Hotel.HotelEntity;
+import grupoExpo.API.Entities.TiposHabitacion.TiposHabitacionEntity;
 import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoEncontrada;
 import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoRegistrada;
-import grupoExpo.API.Models.DTO.ClientesDTO;
 import grupoExpo.API.Models.DTO.HabitacionesDTO;
 import grupoExpo.API.Repositories.Habitaciones.HabitacionesRepository;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -37,9 +35,9 @@ public class HabitacionesService {
     private HabitacionesDTO convertirAHabitacionesDTO(HabitacionesEntity habitacionesEntity) {
         HabitacionesDTO dto = new HabitacionesDTO();
         dto.setIdHabitacion(habitacionesEntity.getIdHabitacion());
-        dto.setIdTipoHabitacion(habitacionesEntity.getIdTipoHabitacion());
-        dto.setIdHotel(habitacionesEntity.getIdHotel());
-        dto.setIdEstadoHabitacion(habitacionesEntity.getIdEstadoHabitacion());
+        dto.setIdTipoHabitacion(habitacionesEntity.getTipoHabitacion().getIdTipoHabitacion());
+        dto.setIdHotel(habitacionesEntity.getHotel().getIdHotel());
+        dto.setIdEstadoHabitacion(habitacionesEntity.getEstadoHabitacion().getIdEstadoHabitacion());
         dto.setNumeroHabitacion(habitacionesEntity.getNumeroHabitacion());
         dto.setDescripcionHabitacion(habitacionesEntity.getDescripcionHabitacion());
         dto.setPrecioHabitacion(habitacionesEntity.getPrecioHabitacion().doubleValue());
@@ -65,9 +63,22 @@ public class HabitacionesService {
     private HabitacionesEntity ConvertirAEntity(HabitacionesDTO data) {
         HabitacionesEntity entity = new HabitacionesEntity();
 
-        entity.setIdTipoHabitacion(data.getIdTipoHabitacion());
-        entity.setIdHotel(data.getIdHotel());
-        entity.setIdEstadoHabitacion(data.getIdEstadoHabitacion());
+        //Asignando TipoHabitacion a entity de Habitaciones
+        TiposHabitacionEntity tipoHabitacion = new TiposHabitacionEntity();
+        tipoHabitacion.setIdTipoHabitacion(data.getIdTipoHabitacion());
+        entity.setTipoHabitacion(tipoHabitacion);
+
+        //Asignando Hotel a entity de Habitaciones
+        HotelEntity hotel = new HotelEntity();
+        hotel.setIdHotel(data.getIdHotel());
+        entity.setHotel(hotel);
+
+        //Asignando EstadoHabitacion a entity de Habitaciones
+        EstadosHabitacionEntity estadoHabitacion = new EstadosHabitacionEntity();
+        estadoHabitacion.setIdEstadoHabitacion(data.getIdEstadoHabitacion());
+        entity.setEstadoHabitacion(estadoHabitacion);
+
+        //Asignando atributos de DTO a entity
         entity.setNumeroHabitacion(data.getNumeroHabitacion());
         entity.setDescripcionHabitacion(data.getDescripcionHabitacion());
         entity.setPrecioHabitacion(BigDecimal.valueOf(data.getPrecioHabitacion()));
@@ -79,9 +90,23 @@ public class HabitacionesService {
         //1. Verificar la existencia de la habitacion.
         HabitacionesEntity existente = repo.findById(id).orElseThrow(() -> new ExcepcionHabitacionNoEncontrada("Habitacion no encontrada"));
         //2. Actualizar los campos
-        existente.setIdTipoHabitacion(json.getIdTipoHabitacion());
-        existente.setIdHotel(json.getIdHotel());
-        existente.setIdEstadoHabitacion(json.getIdEstadoHabitacion());
+
+        //Asignando TipoHabitacion a entity de Habitaciones
+        TiposHabitacionEntity tipoHabitacion = new TiposHabitacionEntity();
+        tipoHabitacion.setIdTipoHabitacion(json.getIdTipoHabitacion());
+        existente.setTipoHabitacion(tipoHabitacion);
+
+        //Asignando Hotel a entity de Habitaciones
+        HotelEntity hotel = new HotelEntity();
+        hotel.setIdHotel(json.getIdHotel());
+        existente.setHotel(hotel);
+
+        //Asignando EstadoHabitacion a entity de Habitaciones
+        EstadosHabitacionEntity estadoHabitacion = new EstadosHabitacionEntity();
+        estadoHabitacion.setIdEstadoHabitacion(json.getIdEstadoHabitacion());
+        existente.setEstadoHabitacion(estadoHabitacion);
+
+        //Asignando atributos de DTO a entity
         existente.setNumeroHabitacion(json.getNumeroHabitacion());
         existente.setDescripcionHabitacion(json.getDescripcionHabitacion());
         existente.setPrecioHabitacion(BigDecimal.valueOf(json.getPrecioHabitacion()));
@@ -104,7 +129,7 @@ public class HabitacionesService {
                 return false;
             }
         }catch (EmptyResultDataAccessException e){
-            throw new EmptyResultDataAccessException("No se encontro la habitacion con ID: " + id + "para eliminar. ", 1);
+            throw new EmptyResultDataAccessException("No se encontro la habitacion con ID: " + id + " para eliminar. ", 1);
         }
     }
 }

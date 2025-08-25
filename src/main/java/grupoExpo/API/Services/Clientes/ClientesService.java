@@ -1,6 +1,7 @@
 package grupoExpo.API.Services.Clientes;
 
 import grupoExpo.API.Entities.Clientes.ClientesEntity;
+import grupoExpo.API.Entities.Usuarios.UsuariosEntity;
 import grupoExpo.API.Exceptions.Clientes.ExcepcionClienteNoEncontrado;
 import grupoExpo.API.Exceptions.Clientes.ExcepcionClienteNoRegistrado;
 import grupoExpo.API.Models.DTO.ClientesDTO;
@@ -35,7 +36,7 @@ public class ClientesService {
     private ClientesDTO convertirAClienteDTO(ClientesEntity cliente){
         ClientesDTO dto = new ClientesDTO();
         dto.setIdCliente(cliente.getIdCliente());
-        dto.setIdUsuario(cliente.getIdUsuario());
+        dto.setIdUsuario(cliente.getUsuario().getIdUsuario());
         dto.setNombreCliente(cliente.getNombreCliente());
         dto.setApellidoCliente(cliente.getApellidoCliente());
         dto.setDuiCliente(cliente.getDuiCliente());
@@ -54,7 +55,7 @@ public class ClientesService {
             return convertirAClienteDTO(usuarioGuardado);
         }catch (Exception e){
             log.error("Error al registrar el cliente: " + e.getMessage());
-            throw new ExcepcionClienteNoRegistrado("Error al registrar el usuario.");
+            throw new ExcepcionClienteNoRegistrado("Error al registrar el cliente.");
         }
     }
 
@@ -66,7 +67,11 @@ public class ClientesService {
     private ClientesEntity ConvertirAEntity(ClientesDTO data) {
         ClientesEntity entity = new ClientesEntity();
 
-        entity.setIdUsuario(data.getIdUsuario());
+        //Asignando usuario a entity de Clientes
+        UsuariosEntity usuario = new UsuariosEntity();
+        usuario.setIdUsuario(data.getIdUsuario());
+        entity.setUsuario(usuario);
+
         entity.setNombreCliente(data.getNombreCliente());
         entity.setApellidoCliente(data.getApellidoCliente());
         entity.setDuiCliente(data.getDuiCliente());
@@ -79,7 +84,13 @@ public class ClientesService {
         //1. Verificar la existencia del cliente.
         ClientesEntity existente = repo.findById(id).orElseThrow(() -> new ExcepcionClienteNoEncontrado("Cliente no enconrado"));
         //2. Actualizar los campos
-        existente.setIdUsuario(json.getIdUsuario());
+
+        //Asignando usuario a entity de Clientes
+        UsuariosEntity usuario = new UsuariosEntity();
+        usuario.setIdUsuario(json.getIdUsuario());
+        existente.setUsuario(usuario);
+
+        //Asignando atributos de DTO a entity
         existente.setNombreCliente(json.getNombreCliente());
         existente.setApellidoCliente(json.getApellidoCliente());
         existente.setDuiCliente(json.getDuiCliente());
@@ -88,8 +99,6 @@ public class ClientesService {
         ClientesEntity clienteActualizado = repo.save(existente);
         //4. Convertir los datos a DTO y retornarlos
         return convertirAClienteDTO(clienteActualizado);
-
-
     }
 
     public boolean eliminarCliente(String id) {
@@ -104,7 +113,7 @@ public class ClientesService {
                 return false;
             }
         }catch (EmptyResultDataAccessException e){
-            throw new EmptyResultDataAccessException("No se encontro cliente con ID: " + id + "para eliminar. ", 1);
+            throw new EmptyResultDataAccessException("No se encontro cliente con ID: " + id + " para eliminar. ", 1);
         }
     }
 }

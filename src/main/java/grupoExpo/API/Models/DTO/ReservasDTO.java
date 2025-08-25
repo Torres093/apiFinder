@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter @Setter
@@ -26,7 +27,7 @@ public class ReservasDTO {
     private String idMetodoPago;
 
     @NotNull(message = "La fecha de la reserva es obligatoria")
-    private Date fechaReserva;
+    private LocalDate fechaReserva;
 
     @NotNull(message = "El precio total de la reserva es obligatorio")
     private double precioTotalReserva;

@@ -97,7 +97,7 @@ public class ReservasService {
                 return false;
             }
         }catch (EmptyResultDataAccessException e){
-            throw new EmptyResultDataAccessException("No se encontro la reserva con ID: " + id + "para eliminar. ", 1);
+            throw new EmptyResultDataAccessException("No se encontro la reserva con ID: " + id + " para eliminar. ", 1);
         }
     }
 }

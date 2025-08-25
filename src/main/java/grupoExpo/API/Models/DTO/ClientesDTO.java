@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -27,6 +28,6 @@ public class ClientesDTO {
 
     //@NotBlank(message = "La fecha de nacimiento es obligatoria")
     @NotNull(message = "La fecha de nacimiento es obligatoria")
-    private Date nacimientoCliente;
+    private LocalDate nacimientoCliente;
 
 }

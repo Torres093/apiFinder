@@ -30,6 +30,7 @@ public class HabitacionesController {
     public List<HabitacionesDTO> datosHabitaciones(){
         return acceso.getAllHabitaciones();
     }
+
     //Insertar Datos
     @PostMapping("/registrarHabitaciones")
     public ResponseEntity<?> nuevaHabitacion(@Valid @RequestBody HabitacionesDTO json, HttpServletRequest request){

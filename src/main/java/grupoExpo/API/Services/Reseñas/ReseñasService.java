@@ -93,7 +93,7 @@ public class ReseñasService {
                 return false;
             }
         }catch (EmptyResultDataAccessException e){
-            throw new EmptyResultDataAccessException("No se encontro la reseña con ID: " + id + "para eliminar. ", 1);
+            throw new EmptyResultDataAccessException("No se encontro la reseña con ID: " + id + " para eliminar. ", 1);
         }
     }
 }

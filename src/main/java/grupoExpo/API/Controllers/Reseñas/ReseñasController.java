@@ -32,6 +32,7 @@ public class ReseñasController {
     public List<ReseñasDTO> datosReseñas(){
         return acceso.getAllReseñas();
     }
+
     //Insertar Datos
     @PostMapping("/registrarReseñas")
     public ResponseEntity<?> nuevaReseña(@Valid @RequestBody ReseñasDTO json, HttpServletRequest request){

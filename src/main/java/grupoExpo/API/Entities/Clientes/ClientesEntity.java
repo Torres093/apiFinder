@@ -1,6 +1,7 @@
 package grupoExpo.API.Entities.Clientes;
 
 
+import grupoExpo.API.Entities.Usuarios.UsuariosEntity;
 import grupoExpo.API.Utils.Convertidor;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -27,8 +29,9 @@ public class ClientesEntity {
     private String idCliente;
 
     //@Convert(converter = Convertidor.class)
-    @Column(name = "IDUSUARIO", columnDefinition = "RAW(16)", unique = true)
-    private String idUsuario;
+    @OneToOne
+    @JoinColumn(name = "IDUSUARIO", referencedColumnName = "IDUSUARIO", columnDefinition = "RAW(16)", unique = true)
+    private UsuariosEntity Usuario;
 
     @Column(name = "NOMBRECLIENTE", length = 60)
     private String nombreCliente;
@@ -40,7 +43,5 @@ public class ClientesEntity {
     private String duiCliente;
 
     @Column(name = "NACIMIENTOCLIENTE")
-    @Temporal(TemporalType.DATE)
-    private Date nacimientoCliente;
-
+    private LocalDate nacimientoCliente;
 }
