@@ -24,6 +24,7 @@ public class TiposHabitacionController {
     @Autowired
     private TiposHabitacionService acceso;
 
+    @CrossOrigin
     @GetMapping("/consultarTiposHabitacion")
     public List<TiposHabitacionDTO> datosTiposHabitacion(){
        return acceso.getAllTiposHabitacion();

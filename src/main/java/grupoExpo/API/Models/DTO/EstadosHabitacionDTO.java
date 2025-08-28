@@ -9,6 +9,7 @@ import lombok.ToString;
 @ToString @EqualsAndHashCode
 @Getter @Setter
 public class EstadosHabitacionDTO {
+
     private String idEstadoHabitacion;
 
     @NotBlank(message = "El nombre es obligatorio")

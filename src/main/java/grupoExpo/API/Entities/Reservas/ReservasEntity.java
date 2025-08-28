@@ -1,5 +1,8 @@
 package grupoExpo.API.Entities.Reservas;
 
+import grupoExpo.API.Entities.Clientes.ClientesEntity;
+import grupoExpo.API.Entities.EstadosReserva.EstadosReservaEntity;
+import grupoExpo.API.Entities.MetodosPago.MetodosPagoEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
@@ -25,19 +28,21 @@ public class ReservasEntity {
     @Column(name = "IDRESERVA", columnDefinition = "RAW(16)")
     private String idReserva;
 
-    @Column(name = "IDCLIENTE", columnDefinition = "RAW(16)")
-    private String idCliente;
+    @ManyToOne
+    @JoinColumn(name = "IDCLIENTE", referencedColumnName = "IDCLIENTE", columnDefinition = "RAW(16)")
+    private ClientesEntity Cliente;
 
-    @Column(name = "IDESTADORESERVA", columnDefinition = "RAW(16)")
-    private String idEstadoReserva;
+    @ManyToOne
+    @JoinColumn(name = "IDESTADORESERVA", referencedColumnName = "IDESTADORESERVA", columnDefinition = "RAW(16)")
+    private EstadosReservaEntity EstadoReserva;
 
-    @Column(name = "IDMETODOPAGO", columnDefinition = "RAW(16)")
-    private String idMetodoPago;
+    @ManyToOne
+    @JoinColumn(name = "IDMETODOPAGO", referencedColumnName = "IDMETODOPAGO", columnDefinition = "RAW(16)")
+    private MetodosPagoEntity MetodoPago;
 
     @Column(name = "FECHARESERVA")
     private LocalDate fechaReserva;
 
     @Column(name = "PRECIOTOTALRESERVA", precision = 14, scale = 2)
-    @Digits(integer = 12, fraction = 2, message = "El valor debe tener como maximo 12 digitos enteros y 2 decimales")
     private BigDecimal precioTotalReserva;
 }

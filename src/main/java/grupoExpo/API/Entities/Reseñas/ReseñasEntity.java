@@ -1,5 +1,7 @@
 package grupoExpo.API.Entities.Reseñas;
 
+import grupoExpo.API.Entities.Clientes.ClientesEntity;
+import grupoExpo.API.Entities.Hotel.HotelEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -22,11 +24,13 @@ public class ReseñasEntity {
     @Column(name = "IDRESEÑA", columnDefinition = "RAW(16)")
     private String idReseña;
 
-    @Column(name = "IDCLIENTE", columnDefinition = "RAW(16)")
-    private String idCliente;
+    @ManyToOne
+    @JoinColumn(name = "IDCLIENTE", referencedColumnName = "IDCLIENTE", columnDefinition = "RAW(16)")
+    private ClientesEntity Cliente;
 
-    @Column(name = "IDHOTEL", columnDefinition = "RAW(16)")
-    private String IdHotel;
+    @ManyToOne
+    @JoinColumn(name = "IDHOTEL", referencedColumnName = "IDHOTEL", columnDefinition = "RAW(16)")
+    private HotelEntity Hotel;
 
     @Column(name = "COMENTARIORESEÑA", length = 500)
     private String comentarioReseña;

@@ -50,7 +50,6 @@ public class HabitacionesEntity {
     private String descripcionHabitacion;
 
     @Column(name = "PRECIOHABITACION", precision = 7, scale = 2)
-    @Digits(integer = 5, fraction = 2, message = "El valor debe tener como maximo 5 digitos enteros y 2 decimales")
     private BigDecimal precioHabitacion;
 
     @Column(name = "CAPACIDADHABITACION")

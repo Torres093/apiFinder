@@ -1,5 +1,6 @@
 package grupoExpo.API.Models.DTO;
 
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -41,6 +42,7 @@ public class EmpleadosDTO {
     private String telefonoEmpleado;
 
     @NotNull(message = "El salario es obligatorio")
+    @Digits(integer = 5, fraction = 2, message = "El valor debe tener como maximo 5 digitos enteros y 2 decimales")
     private double salarioEmpleado;
 
     @NotBlank(message = "El DUI es obligatorio")

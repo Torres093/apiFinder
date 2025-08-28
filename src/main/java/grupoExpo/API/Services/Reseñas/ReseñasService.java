@@ -1,5 +1,8 @@
 package grupoExpo.API.Services.Reseñas;
 
+import grupoExpo.API.Entities.Clientes.ClientesEntity;
+import grupoExpo.API.Entities.EstadosReserva.EstadosReservaEntity;
+import grupoExpo.API.Entities.Hotel.HotelEntity;
 import grupoExpo.API.Entities.Reservas.ReservasEntity;
 import grupoExpo.API.Entities.Reseñas.ReseñasEntity;
 import grupoExpo.API.Exceptions.Reservas.ExcepcionReservaNoEncontrada;
@@ -35,8 +38,8 @@ public class ReseñasService {
     private ReseñasDTO convertirAReseñasDTO(ReseñasEntity reseñas) {
         ReseñasDTO dto = new ReseñasDTO();
         dto.setIdReseña(reseñas.getIdReseña());
-        dto.setIdCliente(reseñas.getIdCliente());
-        dto.setIdHotel(reseñas.getIdHotel());
+        dto.setIdCliente(reseñas.getCliente().getIdCliente());
+        dto.setIdHotel(reseñas.getHotel().getIdHotel());
         dto.setComentarioReseña(reseñas.getComentarioReseña());
         dto.setCalificacionReseña(reseñas.getCalificacionReseña());
         return dto;
@@ -60,8 +63,17 @@ public class ReseñasService {
     private ReseñasEntity ConvertirAEntity(ReseñasDTO data) {
         ReseñasEntity entity = new ReseñasEntity();
 
-        entity.setIdCliente(data.getIdCliente());
-        entity.setIdHotel(data.getIdHotel());
+        //Asignando Cliente a entity de Reseñas
+        ClientesEntity cliente = new ClientesEntity();
+        cliente.setIdCliente(data.getIdCliente());
+        entity.setCliente(cliente);
+
+        //Asignando Hotel a entity de Reseñas
+        HotelEntity hotel = new HotelEntity();
+        hotel.setIdHotel(data.getIdHotel());
+        entity.setHotel(hotel);
+
+        //Asignando atributos de DTO a entity
         entity.setComentarioReseña(data.getComentarioReseña());
         entity.setCalificacionReseña(data.getCalificacionReseña());
         return entity;
@@ -71,10 +83,21 @@ public class ReseñasService {
         //1. Verificar la existencia de la reseña.
         ReseñasEntity existente = repo.findById(id).orElseThrow(() -> new ExcepcionReseñaNoEncontrada("Reseña no encontrada"));
         //2. Actualizar los campos
-        existente.setIdCliente(json.getIdCliente());
-        existente.setIdHotel(json.getIdHotel());
+
+        //Asignando Cliente a entity de Reseñas
+        ClientesEntity cliente = new ClientesEntity();
+        cliente.setIdCliente(json.getIdCliente());
+        existente.setCliente(cliente);
+
+        //Asignando Hotel a entity de Reseñas
+        HotelEntity hotel = new HotelEntity();
+        hotel.setIdHotel(json.getIdHotel());
+        existente.setHotel(hotel);
+
+        //Asignando atributos de DTO a entity
         existente.setComentarioReseña(json.getComentarioReseña());
         existente.setCalificacionReseña(json.getCalificacionReseña());
+
         //3. Guardar los cambios
         ReseñasEntity reseñaActualizada = repo.save(existente);
         //4. Convertir los datos a DTO y retornarlos

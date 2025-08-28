@@ -1,5 +1,6 @@
 package grupoExpo.API.Models.DTO;
 
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
@@ -30,9 +31,9 @@ public class HabitacionesDTO {
     private String descripcionHabitacion;
 
     @NotNull(message = "El precio de la habitacion es obligatorio")
+    @Digits(integer = 5, fraction = 2, message = "El valor debe tener como maximo 5 digitos enteros y 2 decimales")
     private double precioHabitacion;
 
     @NotNull(message = "El numero de la capacidad es obligatorio")
     private int capacidadHabitacion;
-
 }

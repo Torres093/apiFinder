@@ -1,10 +1,7 @@
 package grupoExpo.API.Controllers.Reservas;
 
-import grupoExpo.API.Exceptions.Habitaciones.ExcepcionDatosDuplicadosHabitacion;
-import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoEncontrada;
 import grupoExpo.API.Exceptions.Reservas.ExcepcionDatosDuplicadosReserva;
 import grupoExpo.API.Exceptions.Reservas.ExcepcionReservaNoEncontrada;
-import grupoExpo.API.Models.DTO.HabitacionesDTO;
 import grupoExpo.API.Models.DTO.ReservasDTO;
 import grupoExpo.API.Services.Reservas.ReservasService;
 import jakarta.servlet.http.HttpServletRequest;

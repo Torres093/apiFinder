@@ -1,6 +1,7 @@
 package grupoExpo.API.Models.DTO;
 
 
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
@@ -30,5 +31,6 @@ public class ReservasDTO {
     private LocalDate fechaReserva;
 
     @NotNull(message = "El precio total de la reserva es obligatorio")
+    @Digits(integer = 12, fraction = 2, message = "El valor debe tener como maximo 12 digitos enteros y 2 decimales")
     private double precioTotalReserva;
 }

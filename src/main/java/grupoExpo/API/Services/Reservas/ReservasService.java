@@ -1,8 +1,13 @@
 package grupoExpo.API.Services.Reservas;
 
 
+import grupoExpo.API.Entities.Clientes.ClientesEntity;
+import grupoExpo.API.Entities.Empleados.EmpleadosEntity;
+import grupoExpo.API.Entities.EstadosReserva.EstadosReservaEntity;
 import grupoExpo.API.Entities.Habitaciones.HabitacionesEntity;
+import grupoExpo.API.Entities.MetodosPago.MetodosPagoEntity;
 import grupoExpo.API.Entities.Reservas.ReservasEntity;
+import grupoExpo.API.Entities.TiposMantenimiento.TiposMantenimientoEntity;
 import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoEncontrada;
 import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoRegistrada;
 import grupoExpo.API.Exceptions.Reservas.ExcepcionReservaNoEncontrada;
@@ -36,9 +41,9 @@ public class ReservasService {
     private ReservasDTO convertirAReservasDTO(ReservasEntity reservas) {
         ReservasDTO dto = new ReservasDTO();
         dto.setIdReserva(reservas.getIdReserva());
-        dto.setIdCliente(reservas.getIdCliente());
-        dto.setIdEstadoReserva(reservas.getIdEstadoReserva());
-        dto.setIdMetodoPago(reservas.getIdMetodoPago());
+        dto.setIdCliente(reservas.getCliente().getIdCliente());
+        dto.setIdEstadoReserva(reservas.getEstadoReserva().getIdEstadoReserva());
+        dto.setIdMetodoPago(reservas.getMetodoPago().getIdMetodoPago());
         dto.setFechaReserva(reservas.getFechaReserva());
         dto.setPrecioTotalReserva(reservas.getPrecioTotalReserva().doubleValue());
         return dto;
@@ -62,9 +67,22 @@ public class ReservasService {
     private ReservasEntity ConvertirAEntity(ReservasDTO data) {
         ReservasEntity entity = new ReservasEntity();
 
-        entity.setIdCliente(data.getIdCliente());
-        entity.setIdEstadoReserva(data.getIdEstadoReserva());
-        entity.setIdMetodoPago(data.getIdMetodoPago());
+        //Asignando Cliente a entity de Reservas
+        ClientesEntity cliente = new ClientesEntity();
+        cliente.setIdCliente(data.getIdCliente());
+        entity.setCliente(cliente);
+
+        //Asignando EstadoReserva a entity de Reservas
+        EstadosReservaEntity estadoReserva = new EstadosReservaEntity();
+        estadoReserva.setIdEstadoReserva(data.getIdEstadoReserva());
+        entity.setEstadoReserva(estadoReserva);
+
+        //Asignando MetodoPago a entity de Reservas
+        MetodosPagoEntity metodoPago = new MetodosPagoEntity();
+        metodoPago.setIdMetodoPago(data.getIdMetodoPago());
+        entity.setMetodoPago(metodoPago);
+
+        //Asignando atributos de DTO a entity
         entity.setFechaReserva(data.getFechaReserva());
         entity.setPrecioTotalReserva(BigDecimal.valueOf(data.getPrecioTotalReserva()));
         return entity;
@@ -74,11 +92,26 @@ public class ReservasService {
         //1. Verificar la existencia de la reserva.
         ReservasEntity existente = repo.findById(id).orElseThrow(() -> new ExcepcionReservaNoEncontrada("Reserva no encontrada"));
         //2. Actualizar los campos
-        existente.setIdCliente(json.getIdCliente());
-        existente.setIdEstadoReserva(json.getIdEstadoReserva());
-        existente.setIdMetodoPago(json.getIdMetodoPago());
+
+        //Asignando Cliente a entity de Reservas
+        ClientesEntity cliente = new ClientesEntity();
+        cliente.setIdCliente(json.getIdCliente());
+        existente.setCliente(cliente);
+
+        //Asignando EstadoReserva a entity de Reservas
+        EstadosReservaEntity estadoReserva = new EstadosReservaEntity();
+        estadoReserva.setIdEstadoReserva(json.getIdEstadoReserva());
+        existente.setEstadoReserva(estadoReserva);
+
+        //Asignando MetodoPago a entity de Reservas
+        MetodosPagoEntity metodoPago = new MetodosPagoEntity();
+        metodoPago.setIdMetodoPago(json.getIdMetodoPago());
+        existente.setMetodoPago(metodoPago);
+
+        //Asignando atributos de DTO a entity
         existente.setFechaReserva(json.getFechaReserva());
         existente.setPrecioTotalReserva(BigDecimal.valueOf(json.getPrecioTotalReserva()));
+
         //3. Guardar los cambios
         ReservasEntity reservaActualizada = repo.save(existente);
         //4. Convertir los datos a DTO y retornarlos

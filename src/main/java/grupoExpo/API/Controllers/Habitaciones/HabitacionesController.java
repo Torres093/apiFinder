@@ -26,6 +26,7 @@ public class HabitacionesController {
     @Autowired
     private HabitacionesService acceso;
 
+    @CrossOrigin
     @GetMapping("/consultarHabitaciones")
     public List<HabitacionesDTO> datosHabitaciones(){
         return acceso.getAllHabitaciones();
@@ -56,6 +57,7 @@ public class HabitacionesController {
                     ));
         }
     }
+
     //Actualizar datos
     @PutMapping("actualizarHabitaciones/{id}")
     public ResponseEntity<?> modificarHabitacion(
@@ -83,6 +85,7 @@ public class HabitacionesController {
             );
         }
     }
+
     @DeleteMapping("/eliminarHabitaciones/{id}")
     public ResponseEntity<?> eliminarHabitacion(@PathVariable String id){
         try{

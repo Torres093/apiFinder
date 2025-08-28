@@ -49,7 +49,7 @@ public class HotelController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of(
                             "status", "Error",
-                            "message", "Error no controlado al registrar el usuario",
+                            "message", "Error no controlado al registrar el hotel",
                             "detail", e.getMessage()
                     ));
         }

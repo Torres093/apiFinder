@@ -3,6 +3,7 @@ package grupoExpo.API.Exceptions.EstadosHabitacion;
 import lombok.Getter;
 
 public class ExcepcionDatosDuplicadosEstadoHabitacion extends RuntimeException {
+
     @Getter
     private String campoDuplicado;
 

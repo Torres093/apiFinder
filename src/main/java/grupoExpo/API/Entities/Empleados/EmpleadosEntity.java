@@ -53,7 +53,6 @@ public class EmpleadosEntity {
     private String telefonoEmpleado;
 
     @Column(name = "SALARIOEMPLEADO", precision = 7, scale = 2)
-    @Digits(integer = 5, fraction = 2, message = "El valor debe tener como maximo 5 digitos enteros y 2 decimales")
     private BigDecimal salarioEmpleado;
 
     @Column(name = "DUIEMPLEADO", length = 10, unique = true)

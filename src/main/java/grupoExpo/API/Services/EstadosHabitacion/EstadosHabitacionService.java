@@ -69,7 +69,7 @@ public class EstadosHabitacionService {
 
     public boolean eliminarEstadoHabitacion(String id) {
         try {
-            //1. Validar existencia del estado de habitaacion
+            //1. Validar existencia del estado de habitacion
             EstadosHabitacionEntity existente = repo.findById(id).orElse(null);
             //2. Eliminar el estado de habitacion, si existe retornar true. Si no existe retornar false
             if(existente != null){
