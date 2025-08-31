@@ -7,7 +7,7 @@ public class ExcepcionDatosDuplicadosDetalleReservaServicio extends RuntimeExcep
     @Getter
     private String campoDuplicado;
 
-    public  ExcepcionDatosDuplicadosDetalleReservaServicio(String message, String campoDuplicado) {
+    public ExcepcionDatosDuplicadosDetalleReservaServicio(String message, String campoDuplicado) {
         super(message);
         this.campoDuplicado = campoDuplicado;
     }

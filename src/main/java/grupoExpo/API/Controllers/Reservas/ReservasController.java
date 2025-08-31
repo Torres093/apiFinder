@@ -24,12 +24,14 @@ public class ReservasController {
     @Autowired
     private ReservasService acceso;
 
+    @CrossOrigin
     @GetMapping("/consultarReservas")
     public List<ReservasDTO> datosReservas(){
         return acceso.getAllReservas();
     }
 
     //Insertar Datos
+    @CrossOrigin
     @PostMapping("/registrarReservas")
     public ResponseEntity<?> nuevaReserva(@Valid @RequestBody ReservasDTO json, HttpServletRequest request){
         try {
@@ -54,7 +56,9 @@ public class ReservasController {
                     ));
         }
     }
+
     //Actualizar datos
+    @CrossOrigin
     @PutMapping("actualizarReservas/{id}")
     public ResponseEntity<?> modificarReserva(
             @PathVariable String id,
@@ -81,6 +85,8 @@ public class ReservasController {
             );
         }
     }
+
+    @CrossOrigin
     @DeleteMapping("/eliminarReservas/{id}")
     public ResponseEntity<?> eliminarReserva(@PathVariable String id){
         try{

@@ -1,12 +1,12 @@
-package grupoExpo.API.Controllers.Eventos;
+package grupoExpo.API.Controllers.DetallesServicioPlato;
 
-import grupoExpo.API.Exceptions.Eventos.ExcepcionDatosDuplicadosEvento;
-import grupoExpo.API.Exceptions.Eventos.ExcepcionEventoNoEncontrado;
-import grupoExpo.API.Exceptions.Habitaciones.ExcepcionDatosDuplicadosHabitacion;
-import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoEncontrada;
-import grupoExpo.API.Models.DTO.EventosDTO;
-import grupoExpo.API.Models.DTO.HabitacionesDTO;
-import grupoExpo.API.Services.Eventos.EventosService;
+import grupoExpo.API.Exceptions.DetallesServicioEvento.ExcepcionDatosDuplicadosDetalleServicioEvento;
+import grupoExpo.API.Exceptions.DetallesServicioEvento.ExcepcionDetalleServicioEventoNoEncontrado;
+import grupoExpo.API.Exceptions.DetallesServicioPlato.ExcepcionDatosDuplicadosDetalleServicioPlato;
+import grupoExpo.API.Exceptions.DetallesServicioPlato.ExcepcionDetalleServicioPlatoNoEncontrado;
+import grupoExpo.API.Models.DTO.DetallesServicioEventoDTO;
+import grupoExpo.API.Models.DTO.DetallesServicioPlatoDTO;
+import grupoExpo.API.Services.DetallesServicioPlato.DetallesServicioPlatoService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,21 +22,21 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-public class EventosController {
+public class DetallesServicioPlatoController {
 
     @Autowired
-    private EventosService acceso;
+    private DetallesServicioPlatoService acceso;
 
-    @GetMapping("/consultarEventos")
-    public List<EventosDTO> datosEventos(){
-        return acceso.getAllEventos();
+    @GetMapping("/consultarDetallesServicioPlato")
+    public List<DetallesServicioPlatoDTO> datosDetallesServicioPlato(){
+        return acceso.getAllDetallesServicioPlato();
     }
 
     //Insertar Datos
-    @PostMapping("/registrarEventos")
-    public ResponseEntity<?> nuevoEvento(@Valid @RequestBody EventosDTO json, HttpServletRequest request){
+    @PostMapping("/registrarDetallesServicioPlato")
+    public ResponseEntity<?> nuevoDetalleServicioPlato(@Valid @RequestBody DetallesServicioPlatoDTO json, HttpServletRequest request){
         try {
-            EventosDTO respuesta = acceso.insertarDatos(json);
+            DetallesServicioPlatoDTO respuesta = acceso.insertarDatos(json);
             if(respuesta == null){
                 return ResponseEntity.badRequest().body(Map.of(
                         "status", "Inserción fallida",
@@ -52,17 +52,17 @@ public class EventosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of(
                             "status", "Error",
-                            "message", "Error no controlado al registrar el evento",
+                            "message", "Error no controlado al registrar el detalleServicioPlato",
                             "detail", e.getMessage()
                     ));
         }
     }
 
     //Actualizar datos
-    @PutMapping("actualizarEventos/{id}")
-    public ResponseEntity<?> modificarEvento(
+    @PutMapping("actualizarDetallesServicioPlato/{id}")
+    public ResponseEntity<?> modificarDetalleServicioPlato(
             @PathVariable String id,
-            @Valid @RequestBody EventosDTO json,
+            @Valid @RequestBody DetallesServicioPlatoDTO json,
             BindingResult bindingResult
     ){
         if(bindingResult.hasErrors()){
@@ -72,41 +72,41 @@ public class EventosController {
             return  ResponseEntity.badRequest().body(errores);
         }
         try {
-            //Creamos un objeto de tipo DTO y se invoca en el metodo "actualizarEvento" que esta en el service
-            EventosDTO dto = acceso.actualizarEvento(id, json);
+            //Creamos un objeto de tipo DTO y se invoca en el metodo "actualizarDetalleServicioPlato" que esta en el service
+            DetallesServicioPlatoDTO dto = acceso.actualizarDetalleServicioPlato(id, json);
             //La API retorna una respuesta la cual contendra los datos en formato DTO
             return ResponseEntity.ok(dto);
-        }catch (ExcepcionEventoNoEncontrado e){
+        }catch (ExcepcionDetalleServicioPlatoNoEncontrado e){
             return ResponseEntity.notFound().build();
         }
-        catch (ExcepcionDatosDuplicadosEvento e){
+        catch (ExcepcionDatosDuplicadosDetalleServicioPlato e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     Map.of("Error", "Datos duplicados", "Campo", e.getCampoDuplicado())
             );
         }
     }
 
-    @DeleteMapping("/eliminarEventos/{id}")
-    public ResponseEntity<?> eliminarEvento(@PathVariable String id){
+    @DeleteMapping("/eliminarDetallesServicioPlato/{id}")
+    public ResponseEntity<?> eliminarDetalleServicioPlato(@PathVariable String id){
         try{
-            if(!acceso.eliminarEvento(id)){
+            if(!acceso.eliminarDetalleServicioPlato(id)){
                 //Error
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .header("Mensaje: error", "Evento no encontrado")
+                        .header("Mensaje: error", "DetalleServicioPlato no encontrado")
                         .body(Map.of("Error", "Not found",
-                                "Mensaje", "El evento no fue encontrado",
+                                "Mensaje", "El detalleServicioPlato no fue encontrado",
                                 "timestamp", Instant.now().toString()
                         ));
             }
             //Exitoso
             return ResponseEntity.ok().body(Map.of(
                     "status", "Proceso completado",
-                    "message", "Evento eliminado exitosamente"
+                    "message", "DetalleServicioPlato eliminado exitosamente"
             ));
         }catch (Exception e){
             return ResponseEntity.internalServerError().body(Map.of(
                     "status", "Error",
-                    "message", "Error al eliminar el evento",
+                    "message", "Error al eliminar el detalleServicioPlato",
                     "detail", e.getMessage()
             ));
         }

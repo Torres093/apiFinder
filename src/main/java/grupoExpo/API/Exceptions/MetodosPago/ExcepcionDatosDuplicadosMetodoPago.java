@@ -3,6 +3,7 @@ package grupoExpo.API.Exceptions.MetodosPago;
 import lombok.Getter;
 
 public class ExcepcionDatosDuplicadosMetodoPago extends RuntimeException {
+    
     @Getter
     private String campoDuplicado;
 

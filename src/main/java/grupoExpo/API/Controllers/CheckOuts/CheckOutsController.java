@@ -1,12 +1,12 @@
-package grupoExpo.API.Controllers.Eventos;
+package grupoExpo.API.Controllers.CheckOuts;
 
-import grupoExpo.API.Exceptions.Eventos.ExcepcionDatosDuplicadosEvento;
-import grupoExpo.API.Exceptions.Eventos.ExcepcionEventoNoEncontrado;
-import grupoExpo.API.Exceptions.Habitaciones.ExcepcionDatosDuplicadosHabitacion;
-import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoEncontrada;
-import grupoExpo.API.Models.DTO.EventosDTO;
-import grupoExpo.API.Models.DTO.HabitacionesDTO;
-import grupoExpo.API.Services.Eventos.EventosService;
+import grupoExpo.API.Exceptions.CheckIns.ExcepcionCheckInNoEncontrado;
+import grupoExpo.API.Exceptions.CheckIns.ExcepcionDatosDuplicadosCheckIn;
+import grupoExpo.API.Exceptions.CheckOuts.ExcepcionCheckOutNoEncontrado;
+import grupoExpo.API.Exceptions.CheckOuts.ExcepcionDatosDuplicadosCheckOut;
+import grupoExpo.API.Models.DTO.CheckInsDTO;
+import grupoExpo.API.Models.DTO.CheckOutsDTO;
+import grupoExpo.API.Services.CheckOuts.CheckOutsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,21 +22,21 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-public class EventosController {
+public class CheckOutsController {
 
     @Autowired
-    private EventosService acceso;
+    private CheckOutsService acceso;
 
-    @GetMapping("/consultarEventos")
-    public List<EventosDTO> datosEventos(){
-        return acceso.getAllEventos();
+    @GetMapping("/consultarCheckOuts")
+    public List<CheckOutsDTO> datosCheckOuts(){
+        return acceso.getAllCheckOuts();
     }
 
     //Insertar Datos
-    @PostMapping("/registrarEventos")
-    public ResponseEntity<?> nuevoEvento(@Valid @RequestBody EventosDTO json, HttpServletRequest request){
+    @PostMapping("/registrarCheckOuts")
+    public ResponseEntity<?> nuevoCheckOut(@Valid @RequestBody CheckOutsDTO json, HttpServletRequest request){
         try {
-            EventosDTO respuesta = acceso.insertarDatos(json);
+            CheckOutsDTO respuesta = acceso.insertarDatos(json);
             if(respuesta == null){
                 return ResponseEntity.badRequest().body(Map.of(
                         "status", "Inserción fallida",
@@ -52,17 +52,17 @@ public class EventosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of(
                             "status", "Error",
-                            "message", "Error no controlado al registrar el evento",
+                            "message", "Error no controlado al registrar checkOut",
                             "detail", e.getMessage()
                     ));
         }
     }
 
     //Actualizar datos
-    @PutMapping("actualizarEventos/{id}")
-    public ResponseEntity<?> modificarEvento(
+    @PutMapping("actualizarCheckOuts/{id}")
+    public ResponseEntity<?> modificarCheckOut(
             @PathVariable String id,
-            @Valid @RequestBody EventosDTO json,
+            @Valid @RequestBody CheckOutsDTO json,
             BindingResult bindingResult
     ){
         if(bindingResult.hasErrors()){
@@ -72,41 +72,41 @@ public class EventosController {
             return  ResponseEntity.badRequest().body(errores);
         }
         try {
-            //Creamos un objeto de tipo DTO y se invoca en el metodo "actualizarEvento" que esta en el service
-            EventosDTO dto = acceso.actualizarEvento(id, json);
+            //Creamos un objeto de tipo DTO y se invoca en el metodo "actualizarCheckOut" que esta en el service
+            CheckOutsDTO dto = acceso.actualizarCheckOut(id, json);
             //La API retorna una respuesta la cual contendra los datos en formato DTO
             return ResponseEntity.ok(dto);
-        }catch (ExcepcionEventoNoEncontrado e){
+        }catch (ExcepcionCheckOutNoEncontrado e){
             return ResponseEntity.notFound().build();
         }
-        catch (ExcepcionDatosDuplicadosEvento e){
+        catch (ExcepcionDatosDuplicadosCheckOut e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     Map.of("Error", "Datos duplicados", "Campo", e.getCampoDuplicado())
             );
         }
     }
 
-    @DeleteMapping("/eliminarEventos/{id}")
-    public ResponseEntity<?> eliminarEvento(@PathVariable String id){
+    @DeleteMapping("/eliminarCheckOuts/{id}")
+    public ResponseEntity<?> eliminarCheckOut(@PathVariable String id){
         try{
-            if(!acceso.eliminarEvento(id)){
+            if(!acceso.eliminarCheckOut(id)){
                 //Error
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .header("Mensaje: error", "Evento no encontrado")
+                        .header("Mensaje: error", "CheckOut no encontrado")
                         .body(Map.of("Error", "Not found",
-                                "Mensaje", "El evento no fue encontrado",
+                                "Mensaje", "El checkOut no fue encontrado",
                                 "timestamp", Instant.now().toString()
                         ));
             }
             //Exitoso
             return ResponseEntity.ok().body(Map.of(
                     "status", "Proceso completado",
-                    "message", "Evento eliminado exitosamente"
+                    "message", "CheckOut eliminado exitosamente"
             ));
         }catch (Exception e){
             return ResponseEntity.internalServerError().body(Map.of(
                     "status", "Error",
-                    "message", "Error al eliminar el evento",
+                    "message", "Error al eliminar el checkOut",
                     "detail", e.getMessage()
             ));
         }

@@ -1,12 +1,9 @@
-package grupoExpo.API.Controllers.Eventos;
+package grupoExpo.API.Controllers.Platos;
 
-import grupoExpo.API.Exceptions.Eventos.ExcepcionDatosDuplicadosEvento;
-import grupoExpo.API.Exceptions.Eventos.ExcepcionEventoNoEncontrado;
-import grupoExpo.API.Exceptions.Habitaciones.ExcepcionDatosDuplicadosHabitacion;
-import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoEncontrada;
-import grupoExpo.API.Models.DTO.EventosDTO;
-import grupoExpo.API.Models.DTO.HabitacionesDTO;
-import grupoExpo.API.Services.Eventos.EventosService;
+import grupoExpo.API.Exceptions.Platos.ExcepcionDatosDuplicadosPlato;
+import grupoExpo.API.Exceptions.Platos.ExcepcionPlatoNoEncontrado;
+import grupoExpo.API.Models.DTO.PlatosDTO;
+import grupoExpo.API.Services.Platos.PlatosService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,21 +19,21 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-public class EventosController {
+public class PlatosController {
 
     @Autowired
-    private EventosService acceso;
+    private PlatosService acceso;
 
-    @GetMapping("/consultarEventos")
-    public List<EventosDTO> datosEventos(){
-        return acceso.getAllEventos();
+    @GetMapping("/consultarPlatos")
+    public List<PlatosDTO> datosPlatos(){
+        return acceso.getAllPlatos();
     }
 
     //Insertar Datos
-    @PostMapping("/registrarEventos")
-    public ResponseEntity<?> nuevoEvento(@Valid @RequestBody EventosDTO json, HttpServletRequest request){
+    @PostMapping("/registrarPlatos")
+    public ResponseEntity<?> nuevoPlato(@Valid @RequestBody PlatosDTO json, HttpServletRequest request){
         try {
-            EventosDTO respuesta = acceso.insertarDatos(json);
+            PlatosDTO respuesta = acceso.insertarDatos(json);
             if(respuesta == null){
                 return ResponseEntity.badRequest().body(Map.of(
                         "status", "Inserción fallida",
@@ -52,17 +49,17 @@ public class EventosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of(
                             "status", "Error",
-                            "message", "Error no controlado al registrar el evento",
+                            "message", "Error no controlado al registrar el plato",
                             "detail", e.getMessage()
                     ));
         }
     }
 
     //Actualizar datos
-    @PutMapping("actualizarEventos/{id}")
-    public ResponseEntity<?> modificarEvento(
+    @PutMapping("actualizarPlatos/{id}")
+    public ResponseEntity<?> modificarPlato(
             @PathVariable String id,
-            @Valid @RequestBody EventosDTO json,
+            @Valid @RequestBody PlatosDTO json,
             BindingResult bindingResult
     ){
         if(bindingResult.hasErrors()){
@@ -72,41 +69,41 @@ public class EventosController {
             return  ResponseEntity.badRequest().body(errores);
         }
         try {
-            //Creamos un objeto de tipo DTO y se invoca en el metodo "actualizarEvento" que esta en el service
-            EventosDTO dto = acceso.actualizarEvento(id, json);
+            //Creamos un objeto de tipo DTO y se invoca en el metodo "actualizarPlato" que esta en el service
+            PlatosDTO dto = acceso.actualizarPlato(id, json);
             //La API retorna una respuesta la cual contendra los datos en formato DTO
             return ResponseEntity.ok(dto);
-        }catch (ExcepcionEventoNoEncontrado e){
+        }catch (ExcepcionPlatoNoEncontrado e){
             return ResponseEntity.notFound().build();
         }
-        catch (ExcepcionDatosDuplicadosEvento e){
+        catch (ExcepcionDatosDuplicadosPlato e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     Map.of("Error", "Datos duplicados", "Campo", e.getCampoDuplicado())
             );
         }
     }
 
-    @DeleteMapping("/eliminarEventos/{id}")
-    public ResponseEntity<?> eliminarEvento(@PathVariable String id){
+    @DeleteMapping("/eliminarPlatos/{id}")
+    public ResponseEntity<?> eliminarPlato(@PathVariable String id){
         try{
-            if(!acceso.eliminarEvento(id)){
+            if(!acceso.eliminarPlato(id)){
                 //Error
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .header("Mensaje: error", "Evento no encontrado")
+                        .header("Mensaje: error", "Plato no encontrado")
                         .body(Map.of("Error", "Not found",
-                                "Mensaje", "El evento no fue encontrado",
+                                "Mensaje", "El plato no fue encontrado",
                                 "timestamp", Instant.now().toString()
                         ));
             }
             //Exitoso
             return ResponseEntity.ok().body(Map.of(
                     "status", "Proceso completado",
-                    "message", "Evento eliminado exitosamente"
+                    "message", "Plato eliminado exitosamente"
             ));
         }catch (Exception e){
             return ResponseEntity.internalServerError().body(Map.of(
                     "status", "Error",
-                    "message", "Error al eliminar el evento",
+                    "message", "Error al eliminar el plato",
                     "detail", e.getMessage()
             ));
         }
