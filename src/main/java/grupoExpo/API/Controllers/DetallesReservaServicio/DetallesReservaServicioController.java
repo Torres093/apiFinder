@@ -1,10 +1,7 @@
 package grupoExpo.API.Controllers.DetallesReservaServicio;
 
-import grupoExpo.API.Exceptions.DetallesReserva.ExcepcionDatosDuplicadosDetalleReserva;
-import grupoExpo.API.Exceptions.DetallesReserva.ExcepcionDetalleReservaNoEncontrado;
 import grupoExpo.API.Exceptions.DetallesReservaServicio.ExcepcionDatosDuplicadosDetalleReservaServicio;
 import grupoExpo.API.Exceptions.DetallesReservaServicio.ExcepcionDetalleReservaServicioNoEncontrado;
-import grupoExpo.API.Models.DTO.DetallesReservaDTO;
 import grupoExpo.API.Models.DTO.DetallesReservaServicioDTO;
 import grupoExpo.API.Services.DetallesReservaServicio.DetallesReservaServicioService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class DetallesReservaServicioController {
 
     @Autowired

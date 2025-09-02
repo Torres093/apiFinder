@@ -1,10 +1,7 @@
 package grupoExpo.API.Controllers.CheckOuts;
 
-import grupoExpo.API.Exceptions.CheckIns.ExcepcionCheckInNoEncontrado;
-import grupoExpo.API.Exceptions.CheckIns.ExcepcionDatosDuplicadosCheckIn;
 import grupoExpo.API.Exceptions.CheckOuts.ExcepcionCheckOutNoEncontrado;
 import grupoExpo.API.Exceptions.CheckOuts.ExcepcionDatosDuplicadosCheckOut;
-import grupoExpo.API.Models.DTO.CheckInsDTO;
 import grupoExpo.API.Models.DTO.CheckOutsDTO;
 import grupoExpo.API.Services.CheckOuts.CheckOutsService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class CheckOutsController {
 
     @Autowired

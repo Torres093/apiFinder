@@ -2,7 +2,6 @@ package grupoExpo.API.Controllers.Habitaciones;
 
 import grupoExpo.API.Exceptions.Habitaciones.ExcepcionDatosDuplicadosHabitacion;
 import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoEncontrada;
-import grupoExpo.API.Models.DTO.ClientesDTO;
 import grupoExpo.API.Models.DTO.HabitacionesDTO;
 import grupoExpo.API.Services.Habitaciones.HabitacionesService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,10 +16,10 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class HabitacionesController {
 
     @Autowired

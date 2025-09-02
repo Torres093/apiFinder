@@ -1,4 +1,5 @@
 package grupoExpo.API.Controllers.Servicios;
+
 import grupoExpo.API.Exceptions.Servicios.ExcepcionDatosDuplicadosServicio;
 import grupoExpo.API.Exceptions.Servicios.ExcepcionServicioNoEncontrado;
 import grupoExpo.API.Models.DTO.ServiciosDTO;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class ServiciosController {
 
     @Autowired

@@ -1,10 +1,7 @@
 package grupoExpo.API.Controllers.DetallesServicioPlato;
 
-import grupoExpo.API.Exceptions.DetallesServicioEvento.ExcepcionDatosDuplicadosDetalleServicioEvento;
-import grupoExpo.API.Exceptions.DetallesServicioEvento.ExcepcionDetalleServicioEventoNoEncontrado;
 import grupoExpo.API.Exceptions.DetallesServicioPlato.ExcepcionDatosDuplicadosDetalleServicioPlato;
 import grupoExpo.API.Exceptions.DetallesServicioPlato.ExcepcionDetalleServicioPlatoNoEncontrado;
-import grupoExpo.API.Models.DTO.DetallesServicioEventoDTO;
 import grupoExpo.API.Models.DTO.DetallesServicioPlatoDTO;
 import grupoExpo.API.Services.DetallesServicioPlato.DetallesServicioPlatoService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class DetallesServicioPlatoController {
 
     @Autowired

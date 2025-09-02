@@ -1,10 +1,7 @@
 package grupoExpo.API.Controllers.Usuarios;
 
-import grupoExpo.API.Exceptions.Servicios.ExcepcionDatosDuplicadosServicio;
-import grupoExpo.API.Exceptions.Servicios.ExcepcionServicioNoEncontrado;
 import grupoExpo.API.Exceptions.Usuarios.ExcepcionDatosDuplicadosUsuario;
 import grupoExpo.API.Exceptions.Usuarios.ExcepcionUsuarioNoEncontrado;
-import grupoExpo.API.Models.DTO.ServiciosDTO;
 import grupoExpo.API.Models.DTO.UsuariosDTO;
 import grupoExpo.API.Services.Usuarios.UsuariosService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class UsuariosController {
 
     @Autowired

@@ -1,10 +1,7 @@
 package grupoExpo.API.Controllers.Mantenimientos;
 
-import grupoExpo.API.Exceptions.Hotel.ExcepcionDatosDuplicadosHotel;
-import grupoExpo.API.Exceptions.Hotel.ExcepcionHotelNoEncontrado;
 import grupoExpo.API.Exceptions.Mantenimientos.ExcepcionDatosDuplicadosMantenimiento;
 import grupoExpo.API.Exceptions.Mantenimientos.ExcepcionMantenimientoNoEncontrado;
-import grupoExpo.API.Models.DTO.HotelDTO;
 import grupoExpo.API.Models.DTO.MantenimientosDTO;
 import grupoExpo.API.Services.Mantenimientos.MantenimientosService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class MantenimientosController {
 
     @Autowired

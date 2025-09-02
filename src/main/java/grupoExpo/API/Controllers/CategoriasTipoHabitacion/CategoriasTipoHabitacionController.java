@@ -1,10 +1,7 @@
 package grupoExpo.API.Controllers.CategoriasTipoHabitacion;
 
-import grupoExpo.API.Exceptions.Cargos.ExcepcionCargoNoEncontrado;
-import grupoExpo.API.Exceptions.Cargos.ExcepcionDatosDuplicadosCargo;
 import grupoExpo.API.Exceptions.CategoriasTipoHabitacion.ExcepcionCategoriaTipoHabitacionNoEncontrada;
 import grupoExpo.API.Exceptions.CategoriasTipoHabitacion.ExcepcionDatosDuplicadosCategoriaTipoHabitacion;
-import grupoExpo.API.Models.DTO.CargosDTO;
 import grupoExpo.API.Models.DTO.CategoriasTipoHabitacionDTO;
 import grupoExpo.API.Services.CategoriasTipoHabitacion.CategoriasTipoHabitacionService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class CategoriasTipoHabitacionController {
 
     @Autowired

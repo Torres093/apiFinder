@@ -1,11 +1,7 @@
 package grupoExpo.API.Controllers.Reseñas;
 
-import grupoExpo.API.Exceptions.Reservas.ExcepcionDatosDuplicadosReserva;
-import grupoExpo.API.Exceptions.Reservas.ExcepcionReservaNoEncontrada;
 import grupoExpo.API.Exceptions.Reseñas.ExcepcionDatosDuplicadosReseña;
 import grupoExpo.API.Exceptions.Reseñas.ExcepcionReseñaNoEncontrada;
-import grupoExpo.API.Models.DTO.HabitacionesDTO;
-import grupoExpo.API.Models.DTO.ReservasDTO;
 import grupoExpo.API.Models.DTO.ReseñasDTO;
 import grupoExpo.API.Services.Reseñas.ReseñasService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class ReseñasController {
 
     @Autowired

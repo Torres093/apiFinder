@@ -2,10 +2,7 @@ package grupoExpo.API.Controllers.Eventos;
 
 import grupoExpo.API.Exceptions.Eventos.ExcepcionDatosDuplicadosEvento;
 import grupoExpo.API.Exceptions.Eventos.ExcepcionEventoNoEncontrado;
-import grupoExpo.API.Exceptions.Habitaciones.ExcepcionDatosDuplicadosHabitacion;
-import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoEncontrada;
 import grupoExpo.API.Models.DTO.EventosDTO;
-import grupoExpo.API.Models.DTO.HabitacionesDTO;
 import grupoExpo.API.Services.Eventos.EventosService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -22,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class EventosController {
 
     @Autowired

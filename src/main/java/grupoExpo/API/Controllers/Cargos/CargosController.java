@@ -2,10 +2,7 @@ package grupoExpo.API.Controllers.Cargos;
 
 import grupoExpo.API.Exceptions.Cargos.ExcepcionCargoNoEncontrado;
 import grupoExpo.API.Exceptions.Cargos.ExcepcionDatosDuplicadosCargo;
-import grupoExpo.API.Exceptions.Clientes.ExcepcionClienteNoEncontrado;
-import grupoExpo.API.Exceptions.Clientes.ExcepcionDatosDuplicadosCliente;
 import grupoExpo.API.Models.DTO.CargosDTO;
-import grupoExpo.API.Models.DTO.ClientesDTO;
 import grupoExpo.API.Services.Cargos.CargosService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -22,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class CargosController {
 
     @Autowired
