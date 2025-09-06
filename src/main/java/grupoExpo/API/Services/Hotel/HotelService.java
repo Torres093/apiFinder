@@ -9,10 +9,10 @@ import grupoExpo.API.Repositories.Hotel.HotelRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,11 +21,10 @@ public class HotelService {
     @Autowired
     private HotelRepository repo;
 
-    public List<HotelDTO> getAllHotel() {
-        List<HotelEntity> hotel = repo.findAll();
-        return hotel.stream()
-                .map(this::convertirAHotelDTO)
-                .collect(Collectors.toList());
+    public Page<HotelDTO> getAllHotel(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<HotelEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirAHotelDTO);
     }
 
     private HotelDTO convertirAHotelDTO(HotelEntity hotel) {

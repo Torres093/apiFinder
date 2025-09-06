@@ -11,12 +11,12 @@ import grupoExpo.API.Repositories.Habitaciones.HabitacionesRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,11 +25,10 @@ public class HabitacionesService {
     @Autowired
     private HabitacionesRepository repo;
 
-    public List<HabitacionesDTO> getAllHabitaciones() {
-        List<HabitacionesEntity> habitaciones = repo.findAll();
-        return habitaciones.stream()
-                .map(this::convertirAHabitacionesDTO)
-                .collect(Collectors.toList());
+    public Page<HabitacionesDTO> getAllHabitaciones(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<HabitacionesEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirAHabitacionesDTO);
     }
 
     private HabitacionesDTO convertirAHabitacionesDTO(HabitacionesEntity habitacionesEntity) {

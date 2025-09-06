@@ -10,10 +10,10 @@ import grupoExpo.API.Repositories.CheckIns.CheckInsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -22,11 +22,10 @@ public class CheckInsService {
     @Autowired
     private CheckInsRepository repo;
 
-    public List<CheckInsDTO> getAllCheckIns() {
-        List<CheckInsEntity> checkIns = repo.findAll();
-        return checkIns.stream()
-                .map(this::convertirACheckInDTO)
-                .collect(Collectors.toList());
+    public Page<CheckInsDTO> getAllCheckIns(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<CheckInsEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirACheckInDTO);
     }
 
     private CheckInsDTO convertirACheckInDTO(CheckInsEntity checkIn) {

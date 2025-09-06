@@ -1,22 +1,17 @@
 package grupoExpo.API.Services.Cargos;
 
 import grupoExpo.API.Entities.Cargos.CargosEntity;
-import grupoExpo.API.Entities.Clientes.ClientesEntity;
-import grupoExpo.API.Entities.Roles.RolesEntity;
 import grupoExpo.API.Exceptions.Cargos.ExcepcionCargoNoEncontrado;
 import grupoExpo.API.Exceptions.Cargos.ExcepcionCargoNoRegistrado;
-import grupoExpo.API.Exceptions.Clientes.ExcepcionClienteNoRegistrado;
-import grupoExpo.API.Exceptions.Roles.ExcepcionRolNoEncontrado;
 import grupoExpo.API.Models.DTO.CargosDTO;
 import grupoExpo.API.Repositories.Cargos.CargosRepository;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,11 +20,10 @@ public class CargosService {
     @Autowired
     private CargosRepository repo;
 
-    public List<CargosDTO> getAllCargos() {
-        List<CargosEntity> cargos = repo.findAll();
-        return cargos.stream()
-                .map(this::convertirACargoDTO)
-                .collect(Collectors.toList());
+    public Page<CargosDTO> getAllCargos(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<CargosEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirACargoDTO);
     }
 
     private CargosDTO convertirACargoDTO(CargosEntity cargo) {

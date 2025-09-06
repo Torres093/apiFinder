@@ -1,24 +1,19 @@
 package grupoExpo.API.Services.DetallesServicioPlato;
 
-import grupoExpo.API.Entities.DetallesServicioEvento.DetallesServicioEventoEntity;
 import grupoExpo.API.Entities.DetallesServicioPlato.DetallesServicioPlatoEntity;
-import grupoExpo.API.Entities.Eventos.EventosEntity;
 import grupoExpo.API.Entities.Platos.PlatosEntity;
 import grupoExpo.API.Entities.Servicios.ServiciosEntity;
-import grupoExpo.API.Exceptions.DetallesServicioEvento.ExcepcionDetalleServicioEventoNoEncontrado;
-import grupoExpo.API.Exceptions.DetallesServicioEvento.ExcepcionDetalleServicioEventoNoRegistrado;
 import grupoExpo.API.Exceptions.DetallesServicioPlato.ExcepcionDetalleServicioPlatoNoEncontrado;
 import grupoExpo.API.Exceptions.DetallesServicioPlato.ExcepcionDetalleServicioPlatoNoRegistrado;
 import grupoExpo.API.Models.DTO.DetallesServicioPlatoDTO;
 import grupoExpo.API.Repositories.DetallesServicioPlato.DetallesServicioPlatoRepository;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,11 +22,10 @@ public class DetallesServicioPlatoService {
     @Autowired
     private DetallesServicioPlatoRepository repo;
 
-    public List<DetallesServicioPlatoDTO> getAllDetallesServicioPlato() {
-        List<DetallesServicioPlatoEntity> detallesServicioPlato = repo.findAll();
-        return detallesServicioPlato.stream()
-                .map(this::convertirADetalleServicioPlatoDTO)
-                .collect(Collectors.toList());
+    public Page<DetallesServicioPlatoDTO> getAllDetallesServicioPlato(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<DetallesServicioPlatoEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirADetalleServicioPlatoDTO);
     }
 
     private DetallesServicioPlatoDTO convertirADetalleServicioPlatoDTO(DetallesServicioPlatoEntity detalleServicioPlato) {

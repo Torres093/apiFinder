@@ -1,29 +1,19 @@
 package grupoExpo.API.Services.DetallesReservaServicio;
 
-import grupoExpo.API.Entities.Cargos.CargosEntity;
-import grupoExpo.API.Entities.DetallesReserva.DetallesReservaEntity;
 import grupoExpo.API.Entities.DetallesReservaServicio.DetallesReservaServicioEntity;
-import grupoExpo.API.Entities.Empleados.EmpleadosEntity;
-import grupoExpo.API.Entities.Habitaciones.HabitacionesEntity;
-import grupoExpo.API.Entities.Hotel.HotelEntity;
 import grupoExpo.API.Entities.Reservas.ReservasEntity;
 import grupoExpo.API.Entities.Servicios.ServiciosEntity;
-import grupoExpo.API.Entities.Usuarios.UsuariosEntity;
-import grupoExpo.API.Exceptions.DetallesReserva.ExcepcionDetalleReservaNoEncontrado;
-import grupoExpo.API.Exceptions.DetallesReserva.ExcepcionDetalleReservaNoRegistrado;
 import grupoExpo.API.Exceptions.DetallesReservaServicio.ExcepcionDetalleReservaServicioNoEncontrado;
 import grupoExpo.API.Exceptions.DetallesReservaServicio.ExcepcionDetalleReservaServicioNoRegistrado;
 import grupoExpo.API.Models.DTO.DetallesReservaServicioDTO;
 import grupoExpo.API.Repositories.DetallesReservaServicio.DetallesReservaServicioRepository;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -32,11 +22,10 @@ public class DetallesReservaServicioService {
     @Autowired
     private DetallesReservaServicioRepository repo;
 
-    public List<DetallesReservaServicioDTO> getAllDetallesReservaServicio() {
-        List<DetallesReservaServicioEntity> detallesReservaServicio = repo.findAll();
-        return detallesReservaServicio.stream()
-                .map(this::convertirADetalleReservaServicioDTO)
-                .collect(Collectors.toList());
+    public Page<DetallesReservaServicioDTO> getAllDetallesReservaServicio(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<DetallesReservaServicioEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirADetalleReservaServicioDTO);
     }
 
     private DetallesReservaServicioDTO convertirADetalleReservaServicioDTO(DetallesReservaServicioEntity detalleReservaServicio) {
@@ -60,7 +49,6 @@ public class DetallesReservaServicioService {
             log.error("Error al registrar el detalleReservaServicio: " + e.getMessage());
             throw new ExcepcionDetalleReservaServicioNoRegistrado("Error al registrar el detalleReservaServicio.");
         }
-
     }
 
     private DetallesReservaServicioEntity ConvertirAEntity(DetallesReservaServicioDTO data) {

@@ -1,23 +1,19 @@
 package grupoExpo.API.Services.CheckOuts;
 
-import grupoExpo.API.Entities.CheckIns.CheckInsEntity;
 import grupoExpo.API.Entities.CheckOuts.CheckOutsEntity;
 import grupoExpo.API.Entities.DetallesReserva.DetallesReservaEntity;
 import grupoExpo.API.Entities.Empleados.EmpleadosEntity;
-import grupoExpo.API.Exceptions.CheckIns.ExcepcionCheckInNoEncontrado;
-import grupoExpo.API.Exceptions.CheckIns.ExcepcionCheckInNoRegistrado;
 import grupoExpo.API.Exceptions.CheckOuts.ExcepcionCheckOutNoEncontrado;
 import grupoExpo.API.Exceptions.CheckOuts.ExcepcionCheckOutNoRegistrado;
 import grupoExpo.API.Models.DTO.CheckOutsDTO;
 import grupoExpo.API.Repositories.CheckOuts.CheckOutsRepository;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,11 +22,10 @@ public class CheckOutsService {
     @Autowired
     private CheckOutsRepository repo;
 
-    public List<CheckOutsDTO> getAllCheckOuts() {
-        List<CheckOutsEntity> checkOuts = repo.findAll();
-        return checkOuts.stream()
-                .map(this::convertirACheckOutDTO)
-                .collect(Collectors.toList());
+    public Page<CheckOutsDTO> getAllCheckOuts(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<CheckOutsEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirACheckOutDTO);
     }
 
     private CheckOutsDTO convertirACheckOutDTO(CheckOutsEntity checkOut) {

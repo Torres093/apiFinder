@@ -1,6 +1,5 @@
 package grupoExpo.API.Services.DetallesServicioEvento;
 
-import grupoExpo.API.Entities.DetallesReservaServicio.DetallesReservaServicioEntity;
 import grupoExpo.API.Entities.DetallesServicioEvento.DetallesServicioEventoEntity;
 import grupoExpo.API.Entities.Eventos.EventosEntity;
 import grupoExpo.API.Entities.Servicios.ServiciosEntity;
@@ -11,10 +10,10 @@ import grupoExpo.API.Repositories.DetallesServicioEvento.DetallesServicioEventoR
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,11 +22,10 @@ public class DetallesServicioEventoService {
     @Autowired
     private DetallesServicioEventoRepository repo;
 
-    public List<DetallesServicioEventoDTO> getAllDetallesServicioEvento() {
-        List<DetallesServicioEventoEntity> detallesServicioEvento = repo.findAll();
-        return  detallesServicioEvento.stream()
-                .map(this::convertirADetalleServicioEventoDTO)
-                .collect(Collectors.toList());
+    public Page<DetallesServicioEventoDTO> getAllDetallesServicioEvento(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<DetallesServicioEventoEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirADetalleServicioEventoDTO);
     }
 
     private DetallesServicioEventoDTO convertirADetalleServicioEventoDTO(DetallesServicioEventoEntity detalleServicioEvento) {

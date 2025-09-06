@@ -1,25 +1,19 @@
 package grupoExpo.API.Services.Reseñas;
 
 import grupoExpo.API.Entities.Clientes.ClientesEntity;
-import grupoExpo.API.Entities.EstadosReserva.EstadosReservaEntity;
 import grupoExpo.API.Entities.Hotel.HotelEntity;
-import grupoExpo.API.Entities.Reservas.ReservasEntity;
 import grupoExpo.API.Entities.Reseñas.ReseñasEntity;
-import grupoExpo.API.Exceptions.Reservas.ExcepcionReservaNoEncontrada;
-import grupoExpo.API.Exceptions.Reservas.ExcepcionReservaNoRegistrada;
 import grupoExpo.API.Exceptions.Reseñas.ExcepcionReseñaNoEncontrada;
-import grupoExpo.API.Exceptions.Reseñas.ExcepcionReseñaNoRegistrada;
+import grupoExpo.API.Exceptions.Reseñas.ExcepcionReseñaNoRegistrada;;
 import grupoExpo.API.Models.DTO.ReseñasDTO;
 import grupoExpo.API.Repositories.Reseñas.ReseñasRepository;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,11 +22,10 @@ public class ReseñasService {
     @Autowired
     private ReseñasRepository repo;
 
-    public List<ReseñasDTO> getAllReseñas() {
-        List<ReseñasEntity> reseñas = repo.findAll();
-        return reseñas.stream()
-                .map(this::convertirAReseñasDTO)
-                .collect(Collectors.toList());
+    public Page<ReseñasDTO> getAllReseñas(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<ReseñasEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirAReseñasDTO);
     }
 
     private ReseñasDTO convertirAReseñasDTO(ReseñasEntity reseñas) {

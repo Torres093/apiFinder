@@ -1,22 +1,17 @@
 package grupoExpo.API.Services.CategoriasTipoHabitacion;
 
-import grupoExpo.API.Entities.Cargos.CargosEntity;
 import grupoExpo.API.Entities.CategoriasTipoHabitacion.CategoriasTipoHabitacionEntity;
-import grupoExpo.API.Exceptions.Cargos.ExcepcionCargoNoEncontrado;
-import grupoExpo.API.Exceptions.Cargos.ExcepcionCargoNoRegistrado;
 import grupoExpo.API.Exceptions.CategoriasTipoHabitacion.ExcepcionCategoriaTipoHabitacionNoEncontrada;
 import grupoExpo.API.Exceptions.CategoriasTipoHabitacion.ExcepcionCategoriaTipoHabitacionNoRegistrada;
-import grupoExpo.API.Models.DTO.CargosDTO;
 import grupoExpo.API.Models.DTO.CategoriasTipoHabitacionDTO;
 import grupoExpo.API.Repositories.CategoriasTipoHabitacion.CategoriasTipoHabitacionRepository;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,11 +20,10 @@ public class CategoriasTipoHabitacionService {
     @Autowired
     private CategoriasTipoHabitacionRepository repo;
 
-    public List<CategoriasTipoHabitacionDTO> getAllCategoriasTipoHabitacion(){
-        List<CategoriasTipoHabitacionEntity> categoriasTipoHabitacion = repo.findAll();
-        return categoriasTipoHabitacion.stream()
-                .map(this::convertirACategoriaTipoHabitacionDTO)
-                .collect(Collectors.toList());
+    public Page<CategoriasTipoHabitacionDTO> getAllCategoriasTipoHabitacion(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<CategoriasTipoHabitacionEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirACategoriaTipoHabitacionDTO);
     }
 
     private CategoriasTipoHabitacionDTO convertirACategoriaTipoHabitacionDTO(CategoriasTipoHabitacionEntity categoriaTipoHabitacion) {

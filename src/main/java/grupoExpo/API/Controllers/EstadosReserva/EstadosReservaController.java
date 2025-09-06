@@ -1,15 +1,13 @@
 package grupoExpo.API.Controllers.EstadosReserva;
 
-import grupoExpo.API.Exceptions.EstadosHabitacion.ExcepcionDatosDuplicadosEstadoHabitacion;
-import grupoExpo.API.Exceptions.EstadosHabitacion.ExcepcionEstadoHabitacionNoEncontrado;
 import grupoExpo.API.Exceptions.EstadosReserva.ExcepcionDatosDuplicadosEstadoReserva;
 import grupoExpo.API.Exceptions.EstadosReserva.ExcepcionEstadoReservaNoEncontrado;
-import grupoExpo.API.Models.DTO.EstadosHabitacionDTO;
 import grupoExpo.API.Models.DTO.EstadosReservaDTO;
 import grupoExpo.API.Services.EstadosReserva.EstadosReservaService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,9 +25,30 @@ public class EstadosReservaController {
     @Autowired
     private EstadosReservaService acceso;
 
+    //Paginación con datos
     @GetMapping("/consultarEstadosReserva")
-    public List<EstadosReservaDTO> datosEstadosReserva(){
-        return acceso.getAllEstadosReserva();
+    private ResponseEntity<Page<EstadosReservaDTO>> datosEstadosReserva(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+
+        //Parte 1. Se evalúa cuantos registros desea por página el usuario.
+        //Teniendo como máximo 50 registros por página
+        if (size <= 0 || size > 50){
+            ResponseEntity.badRequest().body(Map.of(
+                    "status", "El tamaño de la página debe estar entre 1 y 50"
+            ));
+            return ResponseEntity.ok(null);
+        }
+
+        //Parte 2 Invocando a la función getAll contenido en el Service y guardamos los datos
+        //Si no hay datos será nulo, de lo contrario no será nulo
+        Page<EstadosReservaDTO> estadosReserva = acceso.getAllEstadosReserva(page, size);
+        if (estadosReserva == null){
+            ResponseEntity.badRequest().body(Map.of(
+                    "status", "No hay estados de reservas registradas"
+            ));
+        }
+        return ResponseEntity.ok(estadosReserva);
     }
 
     //Insertar Datos

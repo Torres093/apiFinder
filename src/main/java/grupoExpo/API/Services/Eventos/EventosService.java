@@ -1,25 +1,20 @@
 package grupoExpo.API.Services.Eventos;
 
-import grupoExpo.API.Entities.EstadosHabitacion.EstadosHabitacionEntity;
 import grupoExpo.API.Entities.Eventos.EventosEntity;
-import grupoExpo.API.Entities.Habitaciones.HabitacionesEntity;
 import grupoExpo.API.Entities.Hotel.HotelEntity;
-import grupoExpo.API.Entities.TiposHabitacion.TiposHabitacionEntity;
 import grupoExpo.API.Exceptions.Eventos.ExcepcionEventoNoEncontrado;
 import grupoExpo.API.Exceptions.Eventos.ExcepcionEventoNoRegistrado;
-import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoEncontrada;
-import grupoExpo.API.Exceptions.Hotel.ExcepcionHotelNoRegistrado;
 import grupoExpo.API.Models.DTO.EventosDTO;
 import grupoExpo.API.Repositories.Eventos.EventosRepository;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,11 +23,10 @@ public class EventosService {
     @Autowired
     private EventosRepository repo;
 
-    public List<EventosDTO> getAllEventos() {
-        List<EventosEntity> eventos = repo.findAll();
-        return eventos.stream()
-                .map(this::convertirAEventoDTO)
-                .collect(Collectors.toList());
+    public Page<EventosDTO> getAllEventos(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<EventosEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirAEventoDTO);
     }
 
     private EventosDTO convertirAEventoDTO(EventosEntity evento) {

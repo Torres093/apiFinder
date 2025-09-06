@@ -1,23 +1,20 @@
 package grupoExpo.API.Services.Platos;
 
-import grupoExpo.API.Entities.Eventos.EventosEntity;
 import grupoExpo.API.Entities.Hotel.HotelEntity;
 import grupoExpo.API.Entities.Platos.PlatosEntity;
-import grupoExpo.API.Exceptions.Eventos.ExcepcionEventoNoEncontrado;
-import grupoExpo.API.Exceptions.Eventos.ExcepcionEventoNoRegistrado;
 import grupoExpo.API.Exceptions.Platos.ExcepcionPlatoNoEncontrado;
 import grupoExpo.API.Exceptions.Platos.ExcepcionPlatoNoRegistrado;
 import grupoExpo.API.Models.DTO.PlatosDTO;
 import grupoExpo.API.Repositories.Platos.PlatosRepository;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,11 +23,10 @@ public class PlatosService {
     @Autowired
     private PlatosRepository repo;
 
-    public List<PlatosDTO> getAllPlatos() {
-        List<PlatosEntity> platos = repo.findAll();
-        return platos.stream()
-                .map(this::convertirAPlatoDTO)
-                .collect(Collectors.toList());
+    public Page<PlatosDTO> getAllPlatos(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<PlatosEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirAPlatoDTO);
     }
 
     private PlatosDTO convertirAPlatoDTO(PlatosEntity plato) {

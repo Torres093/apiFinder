@@ -1,28 +1,22 @@
 package grupoExpo.API.Services.Reservas;
 
-
 import grupoExpo.API.Entities.Clientes.ClientesEntity;
-import grupoExpo.API.Entities.Empleados.EmpleadosEntity;
 import grupoExpo.API.Entities.EstadosReserva.EstadosReservaEntity;
-import grupoExpo.API.Entities.Habitaciones.HabitacionesEntity;
 import grupoExpo.API.Entities.MetodosPago.MetodosPagoEntity;
 import grupoExpo.API.Entities.Reservas.ReservasEntity;
-import grupoExpo.API.Entities.TiposMantenimiento.TiposMantenimientoEntity;
-import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoEncontrada;
-import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoRegistrada;
 import grupoExpo.API.Exceptions.Reservas.ExcepcionReservaNoEncontrada;
 import grupoExpo.API.Exceptions.Reservas.ExcepcionReservaNoRegistrada;
 import grupoExpo.API.Models.DTO.ReservasDTO;
 import grupoExpo.API.Repositories.Reservas.ReservasRepository;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -31,11 +25,10 @@ public class ReservasService {
     @Autowired
     private ReservasRepository repo;
 
-    public List<ReservasDTO> getAllReservas(){
-        List <ReservasEntity> reservas = repo.findAll();
-        return reservas.stream()
-                .map(this :: convertirAReservasDTO)
-                .collect(Collectors.toList());
+    public Page<ReservasDTO> getAllReservas(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<ReservasEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirAReservasDTO);
     }
 
     private ReservasDTO convertirAReservasDTO(ReservasEntity reservas) {

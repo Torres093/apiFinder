@@ -1,23 +1,18 @@
 package grupoExpo.API.Services.Usuarios;
 
 import grupoExpo.API.Entities.Roles.RolesEntity;
-import grupoExpo.API.Entities.Servicios.ServiciosEntity;
-import grupoExpo.API.Entities.Usuarios.UsuariosEntity;
-import grupoExpo.API.Exceptions.Servicios.ExcepcionServicioNoEncontrado;
-import grupoExpo.API.Exceptions.Servicios.ExcepcionServicioNoRegistrado;
+import grupoExpo.API.Entities.Usuarios.UsuariosEntity;;
 import grupoExpo.API.Exceptions.Usuarios.ExcepcionUsuarioNoEncontrado;
 import grupoExpo.API.Exceptions.Usuarios.ExcepcionUsuarioNoRegistrado;
-import grupoExpo.API.Models.DTO.ServiciosDTO;
 import grupoExpo.API.Models.DTO.UsuariosDTO;
 import grupoExpo.API.Repositories.Usuarios.UsuariosRepository;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,11 +21,10 @@ public class UsuariosService {
     @Autowired
     private UsuariosRepository repo;
 
-    public List<UsuariosDTO> getAllUsuarios() {
-        List<UsuariosEntity> usuarios = repo.findAll();
-        return usuarios.stream()
-                .map(this::convertirAUsuarioDTO)
-                .collect(Collectors.toList());
+    public Page<UsuariosDTO> getAllUsuarios(int page, int size){
+        Pageable pageable = PageRequest.of(page, size); //Creación de la página.
+        Page<UsuariosEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
+        return pageEntity.map(this::convertirAUsuarioDTO);
     }
 
     private UsuariosDTO convertirAUsuarioDTO(UsuariosEntity usuario) {
