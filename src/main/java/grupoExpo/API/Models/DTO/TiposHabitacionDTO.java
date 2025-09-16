@@ -20,4 +20,7 @@ public class TiposHabitacionDTO {
 
     @NotBlank(message = "La descripcion es obligatoria")
     private String descripcionTipoHabitacion;
+
+    //Campos adicionales
+    private String nombreCategoriaTipoHabitacion;
 }

@@ -37,4 +37,7 @@ public class DetallesReservaDTO {
     @Min(value = 0, message = "El valor debe ser mayor o igual a 0")
     @Max(value = 100, message = "El valor debe ser menor o igual a 100")
     private int descuentoDetalle;
+
+    //Campos adicionales
+    private int numeroHabitacion;
 }

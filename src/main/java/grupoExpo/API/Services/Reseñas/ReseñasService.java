@@ -3,9 +3,13 @@ package grupoExpo.API.Services.Reseñas;
 import grupoExpo.API.Entities.Clientes.ClientesEntity;
 import grupoExpo.API.Entities.Hotel.HotelEntity;
 import grupoExpo.API.Entities.Reseñas.ReseñasEntity;
+import grupoExpo.API.Exceptions.Clientes.ExcepcionClienteNoEncontrado;
+import grupoExpo.API.Exceptions.Hotel.ExcepcionHotelNoEncontrado;
 import grupoExpo.API.Exceptions.Reseñas.ExcepcionReseñaNoEncontrada;
 import grupoExpo.API.Exceptions.Reseñas.ExcepcionReseñaNoRegistrada;;
 import grupoExpo.API.Models.DTO.ReseñasDTO;
+import grupoExpo.API.Repositories.Clientes.ClientesRepository;
+import grupoExpo.API.Repositories.Hotel.HotelRepository;
 import grupoExpo.API.Repositories.Reseñas.ReseñasRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,12 @@ public class ReseñasService {
     @Autowired
     private ReseñasRepository repo;
 
+    @Autowired
+    private ClientesRepository repoClientes;
+
+    @Autowired
+    private HotelRepository repoHotel;
+
     public Page<ReseñasDTO> getAllReseñas(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
         Page<ReseñasEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
@@ -31,8 +41,20 @@ public class ReseñasService {
     private ReseñasDTO convertirAReseñasDTO(ReseñasEntity reseñas) {
         ReseñasDTO dto = new ReseñasDTO();
         dto.setIdReseña(reseñas.getIdReseña());
-        dto.setIdCliente(reseñas.getCliente().getIdCliente());
-        dto.setIdHotel(reseñas.getHotel().getIdHotel());
+        if (reseñas.getCliente() != null){
+            dto.setNombreCliente(reseñas.getCliente().getNombreCliente());
+            dto.setIdCliente(reseñas.getCliente().getIdCliente());
+        }else{
+            dto.setNombreCliente("Sin nombre de cliente asignado");
+            dto.setIdCliente(null);
+        }
+        if (reseñas.getHotel() != null){
+            dto.setNombreHotel(reseñas.getHotel().getNombreHotel());
+            dto.setIdHotel(reseñas.getHotel().getIdHotel());
+        }else{
+            dto.setNombreHotel("Sin nombre de hotel asignado");
+            dto.setIdHotel(null);
+        }
         dto.setComentarioReseña(reseñas.getComentarioReseña());
         dto.setCalificacionReseña(reseñas.getCalificacionReseña());
         return dto;
@@ -57,14 +79,18 @@ public class ReseñasService {
         ReseñasEntity entity = new ReseñasEntity();
 
         //Asignando Cliente a entity de Reseñas
-        ClientesEntity cliente = new ClientesEntity();
-        cliente.setIdCliente(data.getIdCliente());
-        entity.setCliente(cliente);
+        if (data.getIdCliente() != null){
+            ClientesEntity cliente = repoClientes.findById(data.getIdCliente())
+                    .orElseThrow(()-> new ExcepcionClienteNoEncontrado("ID del cliente no encontrado"));
+            entity.setCliente(cliente);
+        }
 
         //Asignando Hotel a entity de Reseñas
-        HotelEntity hotel = new HotelEntity();
-        hotel.setIdHotel(data.getIdHotel());
-        entity.setHotel(hotel);
+        if (data.getIdHotel() != null){
+            HotelEntity hotel = repoHotel.findById(data.getIdHotel())
+                    .orElseThrow(()-> new ExcepcionHotelNoEncontrado("ID del hotel no encontrado"));
+            entity.setHotel(hotel);
+        }
 
         //Asignando atributos de DTO a entity
         entity.setComentarioReseña(data.getComentarioReseña());
@@ -78,14 +104,18 @@ public class ReseñasService {
         //2. Actualizar los campos
 
         //Asignando Cliente a entity de Reseñas
-        ClientesEntity cliente = new ClientesEntity();
-        cliente.setIdCliente(json.getIdCliente());
-        existente.setCliente(cliente);
+        if (json.getIdCliente() != null){
+            ClientesEntity cliente = repoClientes.findById(json.getIdCliente())
+                    .orElseThrow(()-> new ExcepcionClienteNoEncontrado("ID del cliente no encontrado"));
+            existente.setCliente(cliente);
+        }
 
         //Asignando Hotel a entity de Reseñas
-        HotelEntity hotel = new HotelEntity();
-        hotel.setIdHotel(json.getIdHotel());
-        existente.setHotel(hotel);
+        if (json.getIdHotel() != null){
+            HotelEntity hotel = repoHotel.findById(json.getIdHotel())
+                    .orElseThrow(()-> new ExcepcionHotelNoEncontrado("ID del hotel no encontrado"));
+            existente.setHotel(hotel);
+        }
 
         //Asignando atributos de DTO a entity
         existente.setComentarioReseña(json.getComentarioReseña());

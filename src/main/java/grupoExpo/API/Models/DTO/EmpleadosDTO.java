@@ -47,4 +47,11 @@ public class EmpleadosDTO {
 
     @NotBlank(message = "El DUI es obligatorio")
     private String duiEmpleado;
+
+    //Campos adicionales
+    private String nombreUsuario;
+
+    private String nombreCargo;
+
+    private String nombreHotel;
 }

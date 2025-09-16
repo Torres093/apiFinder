@@ -30,4 +30,6 @@ public class ClientesDTO {
     @NotNull(message = "La fecha de nacimiento es obligatoria")
     private LocalDate nacimientoCliente;
 
+    //Campos adicionales
+    private String nombreUsuario;
 }

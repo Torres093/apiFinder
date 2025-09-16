@@ -5,8 +5,10 @@ import grupoExpo.API.Entities.Reservas.ReservasEntity;
 import grupoExpo.API.Entities.Servicios.ServiciosEntity;
 import grupoExpo.API.Exceptions.DetallesReservaServicio.ExcepcionDetalleReservaServicioNoEncontrado;
 import grupoExpo.API.Exceptions.DetallesReservaServicio.ExcepcionDetalleReservaServicioNoRegistrado;
+import grupoExpo.API.Exceptions.Servicios.ExcepcionServicioNoEncontrado;
 import grupoExpo.API.Models.DTO.DetallesReservaServicioDTO;
 import grupoExpo.API.Repositories.DetallesReservaServicio.DetallesReservaServicioRepository;
+import grupoExpo.API.Repositories.Servicios.ServiciosRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,6 +24,9 @@ public class DetallesReservaServicioService {
     @Autowired
     private DetallesReservaServicioRepository repo;
 
+    @Autowired
+    private ServiciosRepository repoServicios;
+
     public Page<DetallesReservaServicioDTO> getAllDetallesReservaServicio(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
         Page<DetallesReservaServicioEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
@@ -32,7 +37,13 @@ public class DetallesReservaServicioService {
         DetallesReservaServicioDTO dto = new DetallesReservaServicioDTO();
         dto.setIdDetalleReservaServicio(detalleReservaServicio.getIdDetalleReservaServicio());
         dto.setIdReserva(detalleReservaServicio.getReserva().getIdReserva());
-        dto.setIdServicio(detalleReservaServicio.getServicio().getIdServicio());
+        if (detalleReservaServicio.getServicio() != null){
+            dto.setNombreServicio(detalleReservaServicio.getServicio().getNombreServicio());
+            dto.setIdServicio(detalleReservaServicio.getServicio().getIdServicio());
+        }else{
+            dto.setNombreServicio("Sin nombre de servicio asignado");
+            dto.setIdServicio(null);
+        }
         return dto;
     }
 
@@ -60,9 +71,11 @@ public class DetallesReservaServicioService {
         entity.setReserva(reserva);
 
         //Asignando Servicio a entity de DetallesReservaServicio
-        ServiciosEntity servicio = new ServiciosEntity();
-        servicio.setIdServicio(data.getIdServicio());
-        entity.setServicio(servicio);
+        if (data.getIdServicio() != null){
+            ServiciosEntity servicio = repoServicios.findById(data.getIdServicio())
+                    .orElseThrow(()-> new ExcepcionServicioNoEncontrado("ID del servicio no encontrado"));
+            entity.setServicio(servicio);
+        }
         return entity;
     }
 
@@ -77,9 +90,11 @@ public class DetallesReservaServicioService {
         existente.setReserva(reserva);
 
         //Asignando Servicio a entity de DetallesReservaServicio
-        ServiciosEntity servicio = new ServiciosEntity();
-        servicio.setIdServicio(json.getIdServicio());
-        existente.setServicio(servicio);
+        if (json.getIdServicio() != null){
+            ServiciosEntity servicio = repoServicios.findById(json.getIdServicio())
+                    .orElseThrow(()-> new ExcepcionServicioNoEncontrado("ID del servicio no encontrado"));
+            existente.setServicio(servicio);
+        }
 
         //3. Guardar los cambios
         DetallesReservaServicioEntity detalleReservaActualizado = repo.save(existente);

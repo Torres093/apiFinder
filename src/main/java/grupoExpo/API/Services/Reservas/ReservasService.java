@@ -4,9 +4,15 @@ import grupoExpo.API.Entities.Clientes.ClientesEntity;
 import grupoExpo.API.Entities.EstadosReserva.EstadosReservaEntity;
 import grupoExpo.API.Entities.MetodosPago.MetodosPagoEntity;
 import grupoExpo.API.Entities.Reservas.ReservasEntity;
+import grupoExpo.API.Exceptions.Clientes.ExcepcionClienteNoEncontrado;
+import grupoExpo.API.Exceptions.EstadosReserva.ExcepcionEstadoReservaNoEncontrado;
+import grupoExpo.API.Exceptions.MetodosPago.ExcepcionMetodoPagoNoEncontrado;
 import grupoExpo.API.Exceptions.Reservas.ExcepcionReservaNoEncontrada;
 import grupoExpo.API.Exceptions.Reservas.ExcepcionReservaNoRegistrada;
 import grupoExpo.API.Models.DTO.ReservasDTO;
+import grupoExpo.API.Repositories.Clientes.ClientesRepository;
+import grupoExpo.API.Repositories.EstadosReserva.EstadosReservaRepository;
+import grupoExpo.API.Repositories.MetodosPago.MetodosPagoRepository;
 import grupoExpo.API.Repositories.Reservas.ReservasRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +31,15 @@ public class ReservasService {
     @Autowired
     private ReservasRepository repo;
 
+    @Autowired
+    private ClientesRepository repoClientes;
+
+    @Autowired
+    private EstadosReservaRepository repoEstadosReserva;
+
+    @Autowired
+    private MetodosPagoRepository repoMetodosPago;
+
     public Page<ReservasDTO> getAllReservas(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
         Page<ReservasEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
@@ -34,9 +49,27 @@ public class ReservasService {
     private ReservasDTO convertirAReservasDTO(ReservasEntity reservas) {
         ReservasDTO dto = new ReservasDTO();
         dto.setIdReserva(reservas.getIdReserva());
-        dto.setIdCliente(reservas.getCliente().getIdCliente());
-        dto.setIdEstadoReserva(reservas.getEstadoReserva().getIdEstadoReserva());
-        dto.setIdMetodoPago(reservas.getMetodoPago().getIdMetodoPago());
+        if (reservas.getCliente() != null){
+            dto.setNombreCliente(reservas.getCliente().getNombreCliente());
+            dto.setIdCliente(reservas.getCliente().getIdCliente());
+        }else{
+            dto.setNombreCliente("Sin nombre de cliente asignado");
+            dto.setIdCliente(null);
+        }
+        if (reservas.getEstadoReserva() != null){
+            dto.setNombreEstadoReserva(reservas.getEstadoReserva().getNombreEstadoReserva());
+            dto.setIdEstadoReserva(reservas.getEstadoReserva().getIdEstadoReserva());
+        }else{
+            dto.setNombreEstadoReserva("Sin nombre del estado de reserva asignado");
+            dto.setIdEstadoReserva(null);
+        }
+        if (reservas.getMetodoPago() != null){
+            dto.setNombreMetodoPago(reservas.getMetodoPago().getNombreMetodoPago());
+            dto.setIdMetodoPago(reservas.getMetodoPago().getIdMetodoPago());
+        }else{
+            dto.setNombreMetodoPago("Sin nombre del metodo de pago asignado");
+            dto.setIdMetodoPago(null);
+        }
         dto.setFechaReserva(reservas.getFechaReserva());
         dto.setPrecioTotalReserva(reservas.getPrecioTotalReserva().doubleValue());
         return dto;
@@ -61,19 +94,25 @@ public class ReservasService {
         ReservasEntity entity = new ReservasEntity();
 
         //Asignando Cliente a entity de Reservas
-        ClientesEntity cliente = new ClientesEntity();
-        cliente.setIdCliente(data.getIdCliente());
-        entity.setCliente(cliente);
+        if (data.getIdCliente() != null){
+            ClientesEntity cliente = repoClientes.findById(data.getIdCliente())
+                    .orElseThrow(()-> new ExcepcionClienteNoEncontrado("ID del cliente no encontrado"));
+            entity.setCliente(cliente);
+        }
 
         //Asignando EstadoReserva a entity de Reservas
-        EstadosReservaEntity estadoReserva = new EstadosReservaEntity();
-        estadoReserva.setIdEstadoReserva(data.getIdEstadoReserva());
-        entity.setEstadoReserva(estadoReserva);
+        if (data.getIdEstadoReserva() != null){
+            EstadosReservaEntity estadoReserva = repoEstadosReserva.findById(data.getIdEstadoReserva())
+                    .orElseThrow(()-> new ExcepcionEstadoReservaNoEncontrado("ID del estado de la reserva no encontrado"));
+            entity.setEstadoReserva(estadoReserva);
+        }
 
         //Asignando MetodoPago a entity de Reservas
-        MetodosPagoEntity metodoPago = new MetodosPagoEntity();
-        metodoPago.setIdMetodoPago(data.getIdMetodoPago());
-        entity.setMetodoPago(metodoPago);
+        if (data.getIdMetodoPago() != null){
+            MetodosPagoEntity metodoPago = repoMetodosPago.findById(data.getIdMetodoPago())
+                    .orElseThrow(()-> new ExcepcionMetodoPagoNoEncontrado("ID del metodo de pago no encontrado"));
+            entity.setMetodoPago(metodoPago);
+        }
 
         //Asignando atributos de DTO a entity
         entity.setFechaReserva(data.getFechaReserva());
@@ -87,19 +126,25 @@ public class ReservasService {
         //2. Actualizar los campos
 
         //Asignando Cliente a entity de Reservas
-        ClientesEntity cliente = new ClientesEntity();
-        cliente.setIdCliente(json.getIdCliente());
-        existente.setCliente(cliente);
+        if (json.getIdCliente() != null){
+            ClientesEntity cliente = repoClientes.findById(json.getIdCliente())
+                    .orElseThrow(()-> new ExcepcionClienteNoEncontrado("ID del cliente no encontrado"));
+            existente.setCliente(cliente);
+        }
 
         //Asignando EstadoReserva a entity de Reservas
-        EstadosReservaEntity estadoReserva = new EstadosReservaEntity();
-        estadoReserva.setIdEstadoReserva(json.getIdEstadoReserva());
-        existente.setEstadoReserva(estadoReserva);
+        if (json.getIdEstadoReserva() != null){
+            EstadosReservaEntity estadoReserva = repoEstadosReserva.findById(json.getIdEstadoReserva())
+                    .orElseThrow(()-> new ExcepcionEstadoReservaNoEncontrado("ID del estado de la reserva no encontrado"));
+            existente.setEstadoReserva(estadoReserva);
+        }
 
         //Asignando MetodoPago a entity de Reservas
-        MetodosPagoEntity metodoPago = new MetodosPagoEntity();
-        metodoPago.setIdMetodoPago(json.getIdMetodoPago());
-        existente.setMetodoPago(metodoPago);
+        if (json.getIdMetodoPago() != null){
+            MetodosPagoEntity metodoPago = repoMetodosPago.findById(json.getIdMetodoPago())
+                    .orElseThrow(()-> new ExcepcionMetodoPagoNoEncontrado("ID del metodo de pago no encontrado"));
+            existente.setMetodoPago(metodoPago);
+        }
 
         //Asignando atributos de DTO a entity
         existente.setFechaReserva(json.getFechaReserva());

@@ -4,8 +4,10 @@ import grupoExpo.API.Entities.Clientes.ClientesEntity;
 import grupoExpo.API.Entities.Usuarios.UsuariosEntity;
 import grupoExpo.API.Exceptions.Clientes.ExcepcionClienteNoEncontrado;
 import grupoExpo.API.Exceptions.Clientes.ExcepcionClienteNoRegistrado;
+import grupoExpo.API.Exceptions.Usuarios.ExcepcionUsuarioNoEncontrado;
 import grupoExpo.API.Models.DTO.ClientesDTO;
 import grupoExpo.API.Repositories.Clientes.ClientesRepository;
+import grupoExpo.API.Repositories.Usuarios.UsuariosRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -21,6 +23,9 @@ public class ClientesService {
     @Autowired
     private ClientesRepository repo;
 
+    @Autowired
+    private UsuariosRepository repoUsuarios;
+
     public Page<ClientesDTO> getAllClientes(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
         Page<ClientesEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
@@ -30,7 +35,13 @@ public class ClientesService {
     private ClientesDTO convertirAClienteDTO(ClientesEntity cliente){
         ClientesDTO dto = new ClientesDTO();
         dto.setIdCliente(cliente.getIdCliente());
-        dto.setIdUsuario(cliente.getUsuario().getIdUsuario());
+        if (cliente.getUsuario() != null){
+            dto.setNombreUsuario(cliente.getUsuario().getNombreUsuario());
+            dto.setIdUsuario(cliente.getUsuario().getIdUsuario());
+        }else{
+            dto.setNombreUsuario("Sin nombre de usuario asignado");
+            dto.setIdUsuario(null);
+        }
         dto.setNombreCliente(cliente.getNombreCliente());
         dto.setApellidoCliente(cliente.getApellidoCliente());
         dto.setDuiCliente(cliente.getDuiCliente());
@@ -57,9 +68,11 @@ public class ClientesService {
         ClientesEntity entity = new ClientesEntity();
 
         //Asignando usuario a entity de Clientes
-        UsuariosEntity usuario = new UsuariosEntity();
-        usuario.setIdUsuario(data.getIdUsuario());
-        entity.setUsuario(usuario);
+        if (data.getIdUsuario() != null){
+            UsuariosEntity usuario = repoUsuarios.findById(data.getIdUsuario())
+                    .orElseThrow(()-> new ExcepcionUsuarioNoEncontrado("ID del usuario no encontrado"));
+            entity.setUsuario(usuario);
+        }
 
         entity.setNombreCliente(data.getNombreCliente());
         entity.setApellidoCliente(data.getApellidoCliente());
@@ -74,9 +87,11 @@ public class ClientesService {
         //2. Actualizar los campos
 
         //Asignando usuario a entity de Clientes
-        UsuariosEntity usuario = new UsuariosEntity();
-        usuario.setIdUsuario(json.getIdUsuario());
-        existente.setUsuario(usuario);
+        if (json.getIdUsuario() != null){
+            UsuariosEntity usuario = repoUsuarios.findById(json.getIdUsuario())
+                    .orElseThrow(()-> new ExcepcionUsuarioNoEncontrado("ID del usuario no encontrado"));
+            existente.setUsuario(usuario);
+        }
 
         //Asignando atributos de DTO a entity
         existente.setNombreCliente(json.getNombreCliente());

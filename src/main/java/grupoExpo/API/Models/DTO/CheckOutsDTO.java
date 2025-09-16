@@ -25,4 +25,7 @@ public class CheckOutsDTO {
     private LocalDateTime fechaYHoraCheckOut;
 
     private String observacionCheckOut;
+
+    //Campos adicionales
+    private String nombreEmpleado;
 }

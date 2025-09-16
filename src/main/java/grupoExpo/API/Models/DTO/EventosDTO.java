@@ -33,4 +33,7 @@ public class EventosDTO {
     @NotNull(message = "El precio es obligatorio")
     @Digits(integer = 8, fraction = 2, message = "El valor debe tener como maximo 8 digitos enteros y 2 decimales")
     private double precioEvento;
+
+    //Campos adicionales
+    private String nombreHotel;
 }

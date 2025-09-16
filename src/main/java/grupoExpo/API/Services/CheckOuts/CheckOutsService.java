@@ -5,8 +5,10 @@ import grupoExpo.API.Entities.DetallesReserva.DetallesReservaEntity;
 import grupoExpo.API.Entities.Empleados.EmpleadosEntity;
 import grupoExpo.API.Exceptions.CheckOuts.ExcepcionCheckOutNoEncontrado;
 import grupoExpo.API.Exceptions.CheckOuts.ExcepcionCheckOutNoRegistrado;
+import grupoExpo.API.Exceptions.Empleados.ExcepcionEmpleadoNoEncontrado;
 import grupoExpo.API.Models.DTO.CheckOutsDTO;
 import grupoExpo.API.Repositories.CheckOuts.CheckOutsRepository;
+import grupoExpo.API.Repositories.Empleados.EmpleadosRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,6 +24,9 @@ public class CheckOutsService {
     @Autowired
     private CheckOutsRepository repo;
 
+    @Autowired
+    private EmpleadosRepository repoEmpleados;
+
     public Page<CheckOutsDTO> getAllCheckOuts(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
         Page<CheckOutsEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
@@ -32,7 +37,13 @@ public class CheckOutsService {
         CheckOutsDTO dto = new CheckOutsDTO();
         dto.setIdCheckOut(checkOut.getIdCheckOut());
         dto.setIdDetalle(checkOut.getDetalle().getIdDetalle());
-        dto.setIdEmpleado(checkOut.getEmpleado().getIdEmpleado());
+        if (checkOut.getEmpleado() != null){
+            dto.setNombreEmpleado(checkOut.getEmpleado().getNombreEmpleado());
+            dto.setIdEmpleado(checkOut.getEmpleado().getIdEmpleado());
+        }else{
+            dto.setNombreEmpleado("Sin nombre de empleado asignado");
+            dto.setIdEmpleado(null);
+        }
         dto.setFechaYHoraCheckOut(checkOut.getFechaYHoraCheckOut());
         dto.setObservacionCheckOut(checkOut.getObservacionCheckOut());
         return dto;
@@ -63,9 +74,11 @@ public class CheckOutsService {
         entity.setDetalle(detalleReserva);
 
         //Asignando Empleado a entity de CheckOuts
-        EmpleadosEntity empleado = new EmpleadosEntity();
-        empleado.setIdEmpleado(data.getIdEmpleado());
-        entity.setEmpleado(empleado);
+        if (data.getIdEmpleado() != null){
+            EmpleadosEntity empleado = repoEmpleados.findById(data.getIdEmpleado())
+                    .orElseThrow(()-> new ExcepcionEmpleadoNoEncontrado("ID del empleado no encontrado"));
+            entity.setEmpleado(empleado);
+        }
 
         //Asignando atributos de DTO a entity
         entity.setFechaYHoraCheckOut(data.getFechaYHoraCheckOut());
@@ -84,9 +97,13 @@ public class CheckOutsService {
         existente.setDetalle(detalleReserva);
 
         //Asignando Empleado a entity de CheckOuts
-        EmpleadosEntity empleado = new EmpleadosEntity();
-        empleado.setIdEmpleado(json.getIdEmpleado());
-        existente.setEmpleado(empleado);
+        if (json.getIdEmpleado() != null){
+            EmpleadosEntity empleado = repoEmpleados.findById(json.getIdEmpleado())
+                    .orElseThrow(()-> new ExcepcionEmpleadoNoEncontrado("ID del empleado no encontrado"));
+            existente.setEmpleado(empleado);
+        }else{
+            existente.setEmpleado(null);
+        }
 
         //Asignando atributos de DTO a entity
         existente.setFechaYHoraCheckOut(json.getFechaYHoraCheckOut());

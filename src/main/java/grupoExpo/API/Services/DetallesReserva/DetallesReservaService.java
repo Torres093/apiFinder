@@ -5,8 +5,10 @@ import grupoExpo.API.Entities.Habitaciones.HabitacionesEntity;
 import grupoExpo.API.Entities.Reservas.ReservasEntity;
 import grupoExpo.API.Exceptions.DetallesReserva.ExcepcionDetalleReservaNoEncontrado;
 import grupoExpo.API.Exceptions.DetallesReserva.ExcepcionDetalleReservaNoRegistrado;
+import grupoExpo.API.Exceptions.Habitaciones.ExcepcionHabitacionNoEncontrada;
 import grupoExpo.API.Models.DTO.DetallesReservaDTO;
 import grupoExpo.API.Repositories.DetallesReserva.DetallesReservaRepository;
+import grupoExpo.API.Repositories.Habitaciones.HabitacionesRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -24,6 +26,9 @@ public class DetallesReservaService {
     @Autowired
     private DetallesReservaRepository repo;
 
+    @Autowired
+    private HabitacionesRepository repoHabitaciones;
+
     public Page<DetallesReservaDTO> getAllDetallesReserva(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
         Page<DetallesReservaEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
@@ -34,7 +39,13 @@ public class DetallesReservaService {
         DetallesReservaDTO dto = new DetallesReservaDTO();
         dto.setIdDetalle(detalleReserva.getIdDetalle());
         dto.setIdReserva(detalleReserva.getReserva().getIdReserva());
-        dto.setIdHabitacion(detalleReserva.getHabitacion().getIdHabitacion());
+        if (detalleReserva.getHabitacion() != null){
+            dto.setNumeroHabitacion(detalleReserva.getHabitacion().getNumeroHabitacion());
+            dto.setIdHabitacion(detalleReserva.getHabitacion().getIdHabitacion());
+        }else{
+            dto.setNumeroHabitacion(-1);
+            dto.setIdHabitacion(null);
+        }
         dto.setNumeroHuespedesDetalle(detalleReserva.getNumeroHuespedesDetalle());
         dto.setFechaYHoraDeLlegadaDetalle(detalleReserva.getFechaYHoraDeLlegadaDetalle());
         dto.setFechaYHoraDeSalidaDetalle(detalleReserva.getFechaYHoraDeSalidaDetalle());
@@ -67,9 +78,11 @@ public class DetallesReservaService {
         entity.setReserva(reserva);
 
         //Asignando Habitacion a entity de DetallesReserva
-        HabitacionesEntity habitacion = new HabitacionesEntity();
-        habitacion.setIdHabitacion(data.getIdHabitacion());
-        entity.setHabitacion(habitacion);
+        if (data.getIdHabitacion() != null){
+            HabitacionesEntity habitacion = repoHabitaciones.findById(data.getIdHabitacion())
+                    .orElseThrow(()-> new ExcepcionHabitacionNoEncontrada("ID de la habitacion no encontrada"));
+            entity.setHabitacion(habitacion);
+        }
 
         //Asignando atributos de DTO a entity
         entity.setNumeroHuespedesDetalle(data.getNumeroHuespedesDetalle());
@@ -91,9 +104,11 @@ public class DetallesReservaService {
         existente.setReserva(reserva);
 
         //Asignando Habitacion a entity de DetallesReserva
-        HabitacionesEntity habitacion = new HabitacionesEntity();
-        habitacion.setIdHabitacion(json.getIdHabitacion());
-        existente.setHabitacion(habitacion);
+        if (json.getIdHabitacion() != null){
+            HabitacionesEntity habitacion = repoHabitaciones.findById(json.getIdHabitacion())
+                    .orElseThrow(()-> new ExcepcionHabitacionNoEncontrada("ID de la habitacion no encontrada"));
+            existente.setHabitacion(habitacion);
+        }
 
         //Asignando atributos de DTO a entity
         existente.setNumeroHuespedesDetalle(json.getNumeroHuespedesDetalle());

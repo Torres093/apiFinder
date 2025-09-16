@@ -25,4 +25,7 @@ public class CheckInsDTO {
     private LocalDateTime fechaYHoraCheckIn;
 
     private String observacionCheckIn;
+
+    //Campos adicionales
+    private String nombreEmpleado;
 }

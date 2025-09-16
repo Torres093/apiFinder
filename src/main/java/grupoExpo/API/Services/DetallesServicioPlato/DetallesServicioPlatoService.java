@@ -5,8 +5,12 @@ import grupoExpo.API.Entities.Platos.PlatosEntity;
 import grupoExpo.API.Entities.Servicios.ServiciosEntity;
 import grupoExpo.API.Exceptions.DetallesServicioPlato.ExcepcionDetalleServicioPlatoNoEncontrado;
 import grupoExpo.API.Exceptions.DetallesServicioPlato.ExcepcionDetalleServicioPlatoNoRegistrado;
+import grupoExpo.API.Exceptions.Platos.ExcepcionPlatoNoEncontrado;
+import grupoExpo.API.Exceptions.Servicios.ExcepcionServicioNoEncontrado;
 import grupoExpo.API.Models.DTO.DetallesServicioPlatoDTO;
 import grupoExpo.API.Repositories.DetallesServicioPlato.DetallesServicioPlatoRepository;
+import grupoExpo.API.Repositories.Platos.PlatosRepository;
+import grupoExpo.API.Repositories.Servicios.ServiciosRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,6 +26,12 @@ public class DetallesServicioPlatoService {
     @Autowired
     private DetallesServicioPlatoRepository repo;
 
+    @Autowired
+    private ServiciosRepository repoServicios;
+
+    @Autowired
+    private PlatosRepository repoPlatos;
+
     public Page<DetallesServicioPlatoDTO> getAllDetallesServicioPlato(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
         Page<DetallesServicioPlatoEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
@@ -31,8 +41,20 @@ public class DetallesServicioPlatoService {
     private DetallesServicioPlatoDTO convertirADetalleServicioPlatoDTO(DetallesServicioPlatoEntity detalleServicioPlato) {
         DetallesServicioPlatoDTO dto = new DetallesServicioPlatoDTO();
         dto.setIdDetalleServicioPlato(detalleServicioPlato.getIdDetalleServicioPlato());
-        dto.setIdServicio(detalleServicioPlato.getServicio().getIdServicio());
-        dto.setIdPlato(detalleServicioPlato.getPlato().getIdPlato());
+        if (detalleServicioPlato.getServicio() != null){
+            dto.setNombreServicio(detalleServicioPlato.getServicio().getNombreServicio());
+            dto.setIdServicio(detalleServicioPlato.getServicio().getIdServicio());
+        }else{
+            dto.setNombreServicio("Sin nombre de servicio asignado");
+            dto.setIdServicio(null);
+        }
+        if (detalleServicioPlato.getPlato() != null){
+            dto.setNombrePlato(detalleServicioPlato.getPlato().getNombrePlato());
+            dto.setIdPlato(detalleServicioPlato.getPlato().getIdPlato());
+        }else{
+            dto.setNombrePlato("Sin nombre del plato asignado");
+            dto.setIdPlato(null);
+        }
         return dto;
     }
 
@@ -55,14 +77,18 @@ public class DetallesServicioPlatoService {
         DetallesServicioPlatoEntity entity = new DetallesServicioPlatoEntity();
 
         //Asignando Servicio a entity de DetallesServicioPlato
-        ServiciosEntity servicio = new ServiciosEntity();
-        servicio.setIdServicio(data.getIdServicio());
-        entity.setServicio(servicio);
+        if (data.getIdServicio() != null){
+            ServiciosEntity servicio = repoServicios.findById(data.getIdServicio())
+                    .orElseThrow(()-> new ExcepcionServicioNoEncontrado("ID del servicio no encontrado"));
+            entity.setServicio(servicio);
+        }
 
         //Asignando Plato a entity de DetallesServicioPlato
-        PlatosEntity plato = new PlatosEntity();
-        plato.setIdPlato(data.getIdPlato());
-        entity.setPlato(plato);
+        if (data.getIdPlato() != null){
+            PlatosEntity plato = repoPlatos.findById(data.getIdPlato())
+                    .orElseThrow(()-> new ExcepcionPlatoNoEncontrado("ID del plato no encontrado"));
+            entity.setPlato(plato);
+        }
         return entity;
     }
 
@@ -72,14 +98,18 @@ public class DetallesServicioPlatoService {
         //2. Actualizar los campos
 
         //Asignando Servicio a entity de DetallesServicioPlato
-        ServiciosEntity servicio = new ServiciosEntity();
-        servicio.setIdServicio(json.getIdServicio());
-        existente.setServicio(servicio);
+        if (json.getIdServicio() != null){
+            ServiciosEntity servicio = repoServicios.findById(json.getIdServicio())
+                    .orElseThrow(()-> new ExcepcionServicioNoEncontrado("ID del servicio no encontrado"));
+            existente.setServicio(servicio);
+        }
 
         //Asignando Plato a entity de DetallesServicioPlato
-        PlatosEntity plato = new PlatosEntity();
-        plato.setIdPlato(json.getIdPlato());
-        existente.setPlato(plato);
+        if (json.getIdPlato() != null){
+            PlatosEntity plato = repoPlatos.findById(json.getIdPlato())
+                    .orElseThrow(()-> new ExcepcionPlatoNoEncontrado("ID del plato no encontrado"));
+            existente.setPlato(plato);
+        }
 
         //3. Guardar los cambios
         DetallesServicioPlatoEntity detalleServicioPlatoActualizado = repo.save(existente);

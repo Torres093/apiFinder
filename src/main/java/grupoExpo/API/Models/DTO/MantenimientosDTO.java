@@ -35,4 +35,11 @@ public class MantenimientosDTO {
     private LocalTime horaFinMantenimiento;
 
     private String observacionMantenimiento;
+
+    //Campos adicionales
+    private int numeroHabitacion;
+
+    private String nombreEmpleado;
+
+    private String nombreTipoMantenimiento;
 }

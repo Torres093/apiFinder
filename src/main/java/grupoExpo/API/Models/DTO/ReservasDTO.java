@@ -33,4 +33,11 @@ public class ReservasDTO {
     @NotNull(message = "El precio total de la reserva es obligatorio")
     @Digits(integer = 12, fraction = 2, message = "El valor debe tener como maximo 12 digitos enteros y 2 decimales")
     private double precioTotalReserva;
+
+    //Campos adicionales
+    private String nombreCliente;
+
+    private String nombreEstadoReserva;
+
+    private String nombreMetodoPago;
 }

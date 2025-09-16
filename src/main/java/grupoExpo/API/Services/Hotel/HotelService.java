@@ -4,8 +4,10 @@ import grupoExpo.API.Entities.Hotel.HotelEntity;
 import grupoExpo.API.Entities.TiposHotel.TiposHotelEntity;
 import grupoExpo.API.Exceptions.Hotel.ExcepcionHotelNoEncontrado;
 import grupoExpo.API.Exceptions.Hotel.ExcepcionHotelNoRegistrado;
+import grupoExpo.API.Exceptions.TiposHotel.ExcepcionTipoHotelNoEncontrado;
 import grupoExpo.API.Models.DTO.HotelDTO;
 import grupoExpo.API.Repositories.Hotel.HotelRepository;
+import grupoExpo.API.Repositories.TiposHotel.TiposHotelRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -21,6 +23,9 @@ public class HotelService {
     @Autowired
     private HotelRepository repo;
 
+    @Autowired
+    private TiposHotelRepository repoTiposHotel;
+
     public Page<HotelDTO> getAllHotel(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
         Page<HotelEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
@@ -31,7 +36,13 @@ public class HotelService {
         HotelDTO dto = new HotelDTO();
 
         dto.setIdHotel(hotel.getIdHotel());
-        dto.setIdTipoHotel(hotel.getTipoHotel().getIdTipoHotel());
+        if (hotel.getTipoHotel() != null){
+            dto.setNombreTipoHotel(hotel.getTipoHotel().getNombreTipoHotel());
+            dto.setIdTipoHotel(hotel.getTipoHotel().getIdTipoHotel());
+        }else{
+            dto.setNombreTipoHotel("Sin nombre de tipo de hotel asignado");
+            dto.setIdTipoHotel(null);
+        }
         dto.setNombreHotel(hotel.getNombreHotel());
         dto.setUbicacionHotel(hotel.getUbicacionHotel());
         dto.setCorreoHotel(hotel.getCorreoHotel());
@@ -60,9 +71,11 @@ public class HotelService {
         HotelEntity entity = new HotelEntity();
 
         //Asignando TipoHotel a entity de Hotel
-        TiposHotelEntity tiposHotel= new TiposHotelEntity();
-        tiposHotel.setIdTipoHotel(data.getIdTipoHotel()); // Esto es un String, asumiendo que es el ID del TipoHotel
-        entity.setTipoHotel(tiposHotel);
+        if (data.getIdTipoHotel() != null){
+            TiposHotelEntity tiposHotel = repoTiposHotel.findById(data.getIdTipoHotel())
+                    .orElseThrow(()-> new ExcepcionTipoHotelNoEncontrado("ID de tipo de hotel no encontrado"));
+            entity.setTipoHotel(tiposHotel);
+        }
 
         //Asignando atributos de DTO a entity
         entity.setNombreHotel(data.getNombreHotel());
@@ -81,9 +94,11 @@ public class HotelService {
         //2. Actualizar los campos
 
         //Asignando TipoHotel a entity de Hotel
-        TiposHotelEntity tiposHotel= new TiposHotelEntity();
-        tiposHotel.setIdTipoHotel(json.getIdTipoHotel()); // Esto es un String, asumiendo que es el ID del TipoHotel
-        existente.setTipoHotel(tiposHotel);
+        if (json.getIdTipoHotel() != null){
+            TiposHotelEntity tiposHotel = repoTiposHotel.findById(json.getIdTipoHotel())
+                    .orElseThrow(()-> new ExcepcionTipoHotelNoEncontrado("ID de tipo de hotel no encontrado"));
+            existente.setTipoHotel(tiposHotel);
+        }
 
         //Asignando atributos de DTO a entity
         existente.setNombreHotel(json.getNombreHotel());

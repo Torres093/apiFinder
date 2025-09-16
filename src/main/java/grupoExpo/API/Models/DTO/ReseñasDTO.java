@@ -28,4 +28,9 @@ public class ReseñasDTO {
     @Min(value = 0, message = "El valor debe ser mayor o igual a 0")
     @Max(value = 5, message = "El valor debe ser menor o igual a 5")
     private int calificacionReseña;
+
+    //Campos adicionales
+    private String nombreCliente;
+
+    private String nombreHotel;
 }

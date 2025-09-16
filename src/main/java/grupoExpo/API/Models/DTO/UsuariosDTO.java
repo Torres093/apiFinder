@@ -36,4 +36,7 @@ public class UsuariosDTO {
 
     @NotNull(message = "El genero es obligatorio")
     private char generoUsuario;
+
+    //Campos adicionales
+    private String nombreRol;
 }

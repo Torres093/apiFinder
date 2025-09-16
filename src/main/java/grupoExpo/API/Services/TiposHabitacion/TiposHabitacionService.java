@@ -2,9 +2,11 @@ package grupoExpo.API.Services.TiposHabitacion;
 
 import grupoExpo.API.Entities.CategoriasTipoHabitacion.CategoriasTipoHabitacionEntity;
 import grupoExpo.API.Entities.TiposHabitacion.TiposHabitacionEntity;
+import grupoExpo.API.Exceptions.CategoriasTipoHabitacion.ExcepcionCategoriaTipoHabitacionNoEncontrada;
 import grupoExpo.API.Exceptions.TiposHabitacion.ExcepcionTipoHabitacionNoEncontrado;
 import grupoExpo.API.Exceptions.TiposHabitacion.ExcepcionTipoHabitacionNoRegistrado;
 import grupoExpo.API.Models.DTO.TiposHabitacionDTO;
+import grupoExpo.API.Repositories.CategoriasTipoHabitacion.CategoriasTipoHabitacionRepository;
 import grupoExpo.API.Repositories.TiposHabitacion.TiposHabitacionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class TiposHabitacionService {
     @Autowired
     private TiposHabitacionRepository repo;
 
+    @Autowired
+    private CategoriasTipoHabitacionRepository repoCategoriasTipoHabitacion;
+
     public Page<TiposHabitacionDTO> getAllTiposHabitacion(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
         Page<TiposHabitacionEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
@@ -30,7 +35,13 @@ public class TiposHabitacionService {
     private TiposHabitacionDTO convertirATipoHabitacionDTO(TiposHabitacionEntity tipoHabitacion) {
         TiposHabitacionDTO dto = new TiposHabitacionDTO();
         dto.setIdTipoHabitacion(tipoHabitacion.getIdTipoHabitacion());
-        dto.setIdCategoriaTipoHabitacion(tipoHabitacion.getCategoriaTipoHabitacion().getIdCategoriaTipoHabitacion());
+        if (tipoHabitacion.getCategoriaTipoHabitacion() != null){
+            dto.setNombreCategoriaTipoHabitacion(tipoHabitacion.getCategoriaTipoHabitacion().getNombreCategoriaTipoHabitacion());
+            dto.setIdCategoriaTipoHabitacion(tipoHabitacion.getCategoriaTipoHabitacion().getIdCategoriaTipoHabitacion());
+        }else{
+            dto.setNombreCategoriaTipoHabitacion("Sin nombre de la categoria del tipo de habitacion asignada");
+            dto.setIdCategoriaTipoHabitacion(null);
+        }
         dto.setNombreTipoHabitacion(tipoHabitacion.getNombreTipoHabitacion());
         dto.setDescripcionTipoHabitacion(tipoHabitacion.getDescripcionTipoHabitacion());
         return dto;
@@ -54,9 +65,11 @@ public class TiposHabitacionService {
         TiposHabitacionEntity entity = new TiposHabitacionEntity();
 
         //Asignando categoriaTipoHabitacion a entity de TiposHabitacion
-        CategoriasTipoHabitacionEntity categoriaTipoHabitacion = new CategoriasTipoHabitacionEntity();
-        categoriaTipoHabitacion.setIdCategoriaTipoHabitacion(data.getIdCategoriaTipoHabitacion());
-        entity.setCategoriaTipoHabitacion(categoriaTipoHabitacion);
+        if (data.getIdCategoriaTipoHabitacion() != null){
+            CategoriasTipoHabitacionEntity categoriaTipoHabitacion = repoCategoriasTipoHabitacion.findById(data.getIdCategoriaTipoHabitacion())
+                    .orElseThrow(()-> new ExcepcionCategoriaTipoHabitacionNoEncontrada("ID de la categoria del tipo de habitacion no encontrada"));
+            entity.setCategoriaTipoHabitacion(categoriaTipoHabitacion);
+        }
 
         //Asignando atributos de DTO a entity
         entity.setNombreTipoHabitacion(data.getNombreTipoHabitacion());
@@ -70,9 +83,11 @@ public class TiposHabitacionService {
         //2. Actualizar los campos
 
         //Asignando categoriaTipoHabitacion a entity de TiposHabitacion
-        CategoriasTipoHabitacionEntity categoriaTipoHabitacion = new CategoriasTipoHabitacionEntity();
-        categoriaTipoHabitacion.setIdCategoriaTipoHabitacion(json.getIdCategoriaTipoHabitacion());
-        existente.setCategoriaTipoHabitacion(categoriaTipoHabitacion);
+        if (json.getIdCategoriaTipoHabitacion() != null){
+            CategoriasTipoHabitacionEntity categoriaTipoHabitacion = repoCategoriasTipoHabitacion.findById(json.getIdCategoriaTipoHabitacion())
+                    .orElseThrow(()-> new ExcepcionCategoriaTipoHabitacionNoEncontrada("ID de la categoria del tipo de habitacion no encontrada"));
+            existente.setCategoriaTipoHabitacion(categoriaTipoHabitacion);
+        }
 
         //Asignando atributos de DTO a entity
         existente.setNombreTipoHabitacion(json.getNombreTipoHabitacion());

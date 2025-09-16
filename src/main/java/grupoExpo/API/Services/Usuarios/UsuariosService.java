@@ -2,9 +2,11 @@ package grupoExpo.API.Services.Usuarios;
 
 import grupoExpo.API.Entities.Roles.RolesEntity;
 import grupoExpo.API.Entities.Usuarios.UsuariosEntity;;
+import grupoExpo.API.Exceptions.Roles.ExcepcionRolNoEncontrado;
 import grupoExpo.API.Exceptions.Usuarios.ExcepcionUsuarioNoEncontrado;
 import grupoExpo.API.Exceptions.Usuarios.ExcepcionUsuarioNoRegistrado;
 import grupoExpo.API.Models.DTO.UsuariosDTO;
+import grupoExpo.API.Repositories.Roles.RolesRepository;
 import grupoExpo.API.Repositories.Usuarios.UsuariosRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class UsuariosService {
     @Autowired
     private UsuariosRepository repo;
 
+    @Autowired
+    private RolesRepository repoRoles;
+
     public Page<UsuariosDTO> getAllUsuarios(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
         Page<UsuariosEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
@@ -30,7 +35,13 @@ public class UsuariosService {
     private UsuariosDTO convertirAUsuarioDTO(UsuariosEntity usuario) {
         UsuariosDTO dto = new UsuariosDTO();
         dto.setIdUsuario(usuario.getIdUsuario());
-        dto.setIdRol(usuario.getRol().getIdRol());
+        if (usuario.getRol() != null){
+            dto.setNombreRol(usuario.getRol().getNombreRol());
+            dto.setIdRol(usuario.getRol().getIdRol());
+        }else{
+            dto.setNombreRol("Sin nombre del rol asignado");
+            dto.setIdRol(null);
+        }
         dto.setNombreUsuario(usuario.getNombreUsuario());
         dto.setCorreoUsuario(usuario.getCorreoUsuario());
         dto.setContraseñaUsuario(usuario.getContraseñaUsuario());
@@ -58,9 +69,11 @@ public class UsuariosService {
         UsuariosEntity entity = new UsuariosEntity();
 
         //Asignando rol a entity de Usuarios
-        RolesEntity rol = new RolesEntity();
-        rol.setIdRol(data.getIdRol()); // Esto es un String, asumiendo que es el ID del rol
-        entity.setRol(rol);
+        if (data.getIdRol() != null){
+            RolesEntity rol = repoRoles.findById(data.getIdRol())
+                    .orElseThrow(()-> new ExcepcionRolNoEncontrado("ID del rol no encontrado"));
+            entity.setRol(rol);
+        }
 
         //Asignando atributos de DTO a entity
         entity.setNombreUsuario(data.getNombreUsuario());
@@ -78,9 +91,11 @@ public class UsuariosService {
         //2. Actualizar los campos
 
         //Asignando rol a entity de Usuarios
-        RolesEntity rol = new RolesEntity();
-        rol.setIdRol(json.getIdRol()); // Esto es un String, asumiendo que es el ID del rol
-        existente.setRol(rol);
+        if (json.getIdRol() != null){
+            RolesEntity rol = repoRoles.findById(json.getIdRol())
+                    .orElseThrow(()-> new ExcepcionRolNoEncontrado("ID del rol no encontrado"));
+            existente.setRol(rol);
+        }
 
         //Asignando atributos de DTO a entity
         existente.setNombreUsuario(json.getNombreUsuario());

@@ -2,9 +2,11 @@ package grupoExpo.API.Services.Platos;
 
 import grupoExpo.API.Entities.Hotel.HotelEntity;
 import grupoExpo.API.Entities.Platos.PlatosEntity;
+import grupoExpo.API.Exceptions.Hotel.ExcepcionHotelNoEncontrado;
 import grupoExpo.API.Exceptions.Platos.ExcepcionPlatoNoEncontrado;
 import grupoExpo.API.Exceptions.Platos.ExcepcionPlatoNoRegistrado;
 import grupoExpo.API.Models.DTO.PlatosDTO;
+import grupoExpo.API.Repositories.Hotel.HotelRepository;
 import grupoExpo.API.Repositories.Platos.PlatosRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class PlatosService {
     @Autowired
     private PlatosRepository repo;
 
+    @Autowired
+    private HotelRepository repoHotel;
+
     public Page<PlatosDTO> getAllPlatos(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
         Page<PlatosEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
@@ -32,7 +37,13 @@ public class PlatosService {
     private PlatosDTO convertirAPlatoDTO(PlatosEntity plato) {
         PlatosDTO dto = new PlatosDTO();
         dto.setIdPlato(plato.getIdPlato());
-        dto.setIdHotel(plato.getHotel().getIdHotel());
+        if (plato.getHotel() != null){
+            dto.setNombreHotel(plato.getHotel().getNombreHotel());
+            dto.setIdHotel(plato.getHotel().getIdHotel());
+        }else{
+            dto.setNombreHotel("Sin nombre de hotel asignado");
+            dto.setIdHotel(null);
+        }
         dto.setNombrePlato(plato.getNombrePlato());
         dto.setDescripcionPlato(plato.getDescripcionPlato());
         dto.setPrecioPlato(plato.getPrecioPlato().doubleValue());
@@ -57,9 +68,11 @@ public class PlatosService {
         PlatosEntity entity = new PlatosEntity();
 
         //Asignando Hotel a entity de Platos
-        HotelEntity hotel = new HotelEntity();
-        hotel.setIdHotel(data.getIdHotel());
-        entity.setHotel(hotel);
+        if (data.getIdHotel() != null){
+            HotelEntity hotel = repoHotel.findById(data.getIdHotel())
+                    .orElseThrow(()-> new ExcepcionHotelNoEncontrado("ID del hotel no encontrado"));
+            entity.setHotel(hotel);
+        }
 
         //Asignando atributos de DTO a entity
         entity.setNombrePlato(data.getNombrePlato());
@@ -74,9 +87,11 @@ public class PlatosService {
         //2. Actualizar los campos
 
         //Asignando Hotel a entity de Platos
-        HotelEntity hotel = new HotelEntity();
-        hotel.setIdHotel(json.getIdHotel());
-        existente.setHotel(hotel);
+        if (json.getIdHotel() != null){
+            HotelEntity hotel = repoHotel.findById(json.getIdHotel())
+                    .orElseThrow(()-> new ExcepcionHotelNoEncontrado("ID del hotel no encontrado"));
+            existente.setHotel(hotel);
+        }
 
         //Asignando atributos de DTO a entity
         existente.setNombrePlato(json.getNombrePlato());

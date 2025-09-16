@@ -4,8 +4,10 @@ import grupoExpo.API.Entities.Eventos.EventosEntity;
 import grupoExpo.API.Entities.Hotel.HotelEntity;
 import grupoExpo.API.Exceptions.Eventos.ExcepcionEventoNoEncontrado;
 import grupoExpo.API.Exceptions.Eventos.ExcepcionEventoNoRegistrado;
+import grupoExpo.API.Exceptions.Hotel.ExcepcionHotelNoEncontrado;
 import grupoExpo.API.Models.DTO.EventosDTO;
 import grupoExpo.API.Repositories.Eventos.EventosRepository;
+import grupoExpo.API.Repositories.Hotel.HotelRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -23,6 +25,9 @@ public class EventosService {
     @Autowired
     private EventosRepository repo;
 
+    @Autowired
+    private HotelRepository repoHotel;
+
     public Page<EventosDTO> getAllEventos(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
         Page<EventosEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
@@ -32,7 +37,13 @@ public class EventosService {
     private EventosDTO convertirAEventoDTO(EventosEntity evento) {
         EventosDTO dto = new EventosDTO();
         dto.setIdEvento(evento.getIdEvento());
-        dto.setIdHotel(evento.getHotel().getIdHotel());
+        if (evento.getHotel() != null){
+            dto.setNombreHotel(evento.getHotel().getNombreHotel());
+            dto.setIdHotel(evento.getHotel().getIdHotel());
+        }else{
+            dto.setNombreHotel("Sin nombre de hotel asignado");
+            dto.setIdHotel(null);
+        }
         dto.setNombreEvento(evento.getNombreEvento());
         dto.setDescripcionEvento(evento.getDescripcionEvento());
         dto.setFechaEvento(evento.getFechaEvento());
@@ -59,9 +70,11 @@ public class EventosService {
         EventosEntity entity = new EventosEntity();
 
         //Asignando Hotel a entity de Eventos
-        HotelEntity hotel = new HotelEntity();
-        hotel.setIdHotel(data.getIdHotel());
-        entity.setHotel(hotel);
+        if (data.getIdHotel() != null){
+            HotelEntity hotel = repoHotel.findById(data.getIdHotel())
+                    .orElseThrow(()-> new ExcepcionHotelNoEncontrado("ID del hotel no encontrado"));
+            entity.setHotel(hotel);
+        }
 
         //Asignando atributos de DTO a entity
         entity.setNombreEvento(data.getNombreEvento());
@@ -78,9 +91,11 @@ public class EventosService {
         //2. Actualizar los campos
 
         //Asignando Hotel a entity de Eventos
-        HotelEntity hotel = new HotelEntity();
-        hotel.setIdHotel(json.getIdHotel());
-        existente.setHotel(hotel);
+        if (json.getIdHotel() != null){
+            HotelEntity hotel = repoHotel.findById(json.getIdHotel())
+                    .orElseThrow(()-> new ExcepcionHotelNoEncontrado("ID del hotel no encontrado"));
+            existente.setHotel(hotel);
+        }
 
         //Asignando atributos de DTO a entity
         existente.setNombreEvento(json.getNombreEvento());

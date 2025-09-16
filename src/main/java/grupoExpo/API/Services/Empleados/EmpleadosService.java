@@ -4,10 +4,16 @@ import grupoExpo.API.Entities.Usuarios.UsuariosEntity;
 import grupoExpo.API.Entities.Cargos.CargosEntity;
 import grupoExpo.API.Entities.Hotel.HotelEntity;
 import grupoExpo.API.Entities.Empleados.EmpleadosEntity;
+import grupoExpo.API.Exceptions.Cargos.ExcepcionCargoNoEncontrado;
 import grupoExpo.API.Exceptions.Empleados.ExcepcionEmpleadoNoEncontrado;
 import grupoExpo.API.Exceptions.Empleados.ExcepcionEmpleadoNoRegistrado;
+import grupoExpo.API.Exceptions.Hotel.ExcepcionHotelNoEncontrado;
+import grupoExpo.API.Exceptions.Usuarios.ExcepcionUsuarioNoEncontrado;
 import grupoExpo.API.Models.DTO.EmpleadosDTO;
+import grupoExpo.API.Repositories.Cargos.CargosRepository;
 import grupoExpo.API.Repositories.Empleados.EmpleadosRepository;
+import grupoExpo.API.Repositories.Hotel.HotelRepository;
+import grupoExpo.API.Repositories.Usuarios.UsuariosRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,6 +31,15 @@ public class EmpleadosService {
     @Autowired
     private EmpleadosRepository repo;
 
+    @Autowired
+    private UsuariosRepository repoUsuarios;
+
+    @Autowired
+    private CargosRepository repoCargos;
+
+    @Autowired
+    private HotelRepository repoHotel;
+
     public Page<EmpleadosDTO> getAllEmpleados(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
         Page<EmpleadosEntity> pageEntity = repo.findAll(pageable); //Inserción de la búsqueda con los registros en la página
@@ -34,9 +49,27 @@ public class EmpleadosService {
     private EmpleadosDTO convertirAEmpleadoDTO(EmpleadosEntity empleado) {
         EmpleadosDTO dto = new EmpleadosDTO();
         dto.setIdEmpleado(empleado.getIdEmpleado());
-        dto.setIdUsuario(empleado.getUsuario().getIdUsuario());
-        dto.setIdCargo(empleado.getCargo().getIdCargo());
-        dto.setIdHotel(empleado.getHotel().getIdHotel());
+        if (empleado.getUsuario() != null){
+            dto.setNombreUsuario(empleado.getUsuario().getNombreUsuario());
+            dto.setIdUsuario(empleado.getUsuario().getIdUsuario());
+        }else{
+            dto.setNombreUsuario("Sin nombre de usuario asignado");
+            dto.setIdUsuario(null);
+        }
+        if (empleado.getCargo() != null){
+            dto.setNombreCargo(empleado.getCargo().getNombreCargo());
+            dto.setIdCargo(empleado.getCargo().getIdCargo());
+        }else{
+            dto.setNombreCargo("Sin nombre de cargo asignado");
+            dto.setIdCargo(null);
+        }
+        if (empleado.getHotel() != null){
+            dto.setNombreHotel(empleado.getHotel().getNombreHotel());
+            dto.setIdHotel(empleado.getHotel().getIdHotel());
+        }else{
+            dto.setNombreHotel("Sin nombre de hotel asignado");
+            dto.setIdHotel(null);
+        }
         dto.setNombreEmpleado(empleado.getNombreEmpleado());
         dto.setApellidoEmpleado(empleado.getApellidoEmpleado());
         dto.setDireccionEmpleado(empleado.getDireccionEmpleado());
@@ -65,19 +98,25 @@ public class EmpleadosService {
         EmpleadosEntity entity = new EmpleadosEntity();
 
         //Asignando usuario a entity de Empleados
-        UsuariosEntity usuario = new UsuariosEntity();
-        usuario.setIdUsuario(data.getIdUsuario());
-        entity.setUsuario(usuario);
+        if (data.getIdUsuario() != null){
+            UsuariosEntity usuario = repoUsuarios.findById(data.getIdUsuario())
+                    .orElseThrow(()-> new ExcepcionUsuarioNoEncontrado("ID del usuario no encontrado"));
+            entity.setUsuario(usuario);
+        }
 
         //Asignando cargo a entity de Empleados
-        CargosEntity cargo = new CargosEntity();
-        cargo.setIdCargo(data.getIdCargo());
-        entity.setCargo(cargo);
+        if (data.getIdCargo() != null){
+            CargosEntity cargo = repoCargos.findById(data.getIdCargo())
+                    .orElseThrow(()-> new ExcepcionCargoNoEncontrado("ID del cargo no encontrado"));
+            entity.setCargo(cargo);
+        }
 
         //Asignando hotel a entity de Empleados
-        HotelEntity hotel = new HotelEntity();
-        hotel.setIdHotel(data.getIdHotel());
-        entity.setHotel(hotel);
+        if (data.getIdHotel() != null){
+            HotelEntity hotel = repoHotel.findById(data.getIdHotel())
+                    .orElseThrow(()-> new ExcepcionHotelNoEncontrado("ID del hotel no encontrado"));
+            entity.setHotel(hotel);
+        }
 
         //Asignando atributos de DTO a entity
         entity.setNombreEmpleado(data.getNombreEmpleado());
@@ -96,19 +135,25 @@ public class EmpleadosService {
 
         //2. Actualizar los campos
         //Asignando usuario a entity de Empleados
-        UsuariosEntity usuario = new UsuariosEntity();
-        usuario.setIdUsuario(json.getIdUsuario());
-        existente.setUsuario(usuario);
+        if (json.getIdUsuario() != null){
+            UsuariosEntity usuario = repoUsuarios.findById(json.getIdUsuario())
+                    .orElseThrow(()-> new ExcepcionUsuarioNoEncontrado("ID del usuario no encontrado"));
+            existente.setUsuario(usuario);
+        }
 
         //Asignando cargo a entity de Empleados
-        CargosEntity cargo = new CargosEntity();
-        cargo.setIdCargo(json.getIdCargo());
-        existente.setCargo(cargo);
+        if (json.getIdCargo() != null){
+            CargosEntity cargo = repoCargos.findById(json.getIdCargo())
+                    .orElseThrow(()-> new ExcepcionCargoNoEncontrado("ID del cargo no encontrado"));
+            existente.setCargo(cargo);
+        }
 
         //Asignando hotel a entity de Empleados
-        HotelEntity hotel = new HotelEntity();
-        hotel.setIdHotel(json.getIdHotel());
-        existente.setHotel(hotel);
+        if (json.getIdHotel() != null){
+            HotelEntity hotel = repoHotel.findById(json.getIdHotel())
+                    .orElseThrow(()-> new ExcepcionHotelNoEncontrado("ID del hotel no encontrado"));
+            existente.setHotel(hotel);
+        }
 
         //Asignando atributos de DTO a entity
         existente.setNombreEmpleado(json.getNombreEmpleado());

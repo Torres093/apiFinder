@@ -36,4 +36,11 @@ public class HabitacionesDTO {
 
     @NotNull(message = "El numero de la capacidad es obligatorio")
     private int capacidadHabitacion;
+
+    //Campos adicionales
+    private String nombreTipoHabitacion;
+
+    private String nombreHotel;
+
+    private String nombreEstadoHabitacion;
 }

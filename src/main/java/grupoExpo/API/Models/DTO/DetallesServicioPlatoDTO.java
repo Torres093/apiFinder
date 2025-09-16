@@ -17,4 +17,9 @@ public class DetallesServicioPlatoDTO {
 
     @NotBlank(message = "El plato es obligatorio")
     private String idPlato;
+
+    //Campos adicionales
+    private String nombreServicio;
+
+    private String nombrePlato;
 }
