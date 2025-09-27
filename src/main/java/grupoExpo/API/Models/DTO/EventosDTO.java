@@ -16,7 +16,6 @@ public class EventosDTO {
 
     private String idEvento;
 
-    @NotBlank(message = "EL hotel es obligatorio")
     private String idHotel;
 
     @NotBlank(message = "El nombre es obligatorio")

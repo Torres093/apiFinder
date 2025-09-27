@@ -14,7 +14,6 @@ public class PlatosDTO {
 
     private String idPlato;
 
-    @NotBlank(message = "El hotel es obligatorio")
     private String idHotel;
 
     @NotBlank(message = "El nombre es obligatorio")

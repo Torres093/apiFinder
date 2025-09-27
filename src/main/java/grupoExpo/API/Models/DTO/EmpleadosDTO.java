@@ -23,7 +23,6 @@ public class EmpleadosDTO {
     @NotBlank(message = "El cargo es obligatorio")
     private String idCargo;
 
-    @NotBlank(message = "El hotel es obligatorio")
     private String idHotel;
 
     @NotBlank(message = "El nombre es obligatorio")

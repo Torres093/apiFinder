@@ -18,7 +18,6 @@ public class ReseñasDTO {
     @NotBlank(message = "El cliente es obligatorio")
     private String idCliente;
 
-    @NotBlank(message = "El hotel es obligatorio")
     private String IdHotel;
 
     @NotBlank(message = "El comentario es obligatorio")

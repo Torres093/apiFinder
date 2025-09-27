@@ -19,7 +19,6 @@ public class HabitacionesDTO {
     @NotBlank(message = "El Tipo de Habitacion es obligatorio")
     private String idTipoHabitacion;
 
-    @NotBlank(message = "El hotel es obligatorio")
     private String idHotel;
 
     @NotBlank(message = "El estado del hotel es obligatorio")
