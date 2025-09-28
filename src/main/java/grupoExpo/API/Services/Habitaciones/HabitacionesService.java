@@ -77,6 +77,7 @@ public class HabitacionesService {
         dto.setDescripcionHabitacion(habitacionesEntity.getDescripcionHabitacion());
         dto.setPrecioHabitacion(habitacionesEntity.getPrecioHabitacion().doubleValue());
         dto.setCapacidadHabitacion(habitacionesEntity.getCapacidadHabitacion());
+        dto.setImagenHabitacion(habitacionesEntity.getImagenHabitacion());
         return dto;
     }
 
@@ -124,6 +125,7 @@ public class HabitacionesService {
         entity.setDescripcionHabitacion(data.getDescripcionHabitacion());
         entity.setPrecioHabitacion(BigDecimal.valueOf(data.getPrecioHabitacion()));
         entity.setCapacidadHabitacion(data.getCapacidadHabitacion());
+        entity.setImagenHabitacion(data.getImagenHabitacion());
         return entity;
     }
 
@@ -162,6 +164,7 @@ public class HabitacionesService {
         existente.setDescripcionHabitacion(json.getDescripcionHabitacion());
         existente.setPrecioHabitacion(BigDecimal.valueOf(json.getPrecioHabitacion()));
         existente.setCapacidadHabitacion(json.getCapacidadHabitacion());
+        existente.setImagenHabitacion(json.getImagenHabitacion());
         //3. Guardar los cambios
         HabitacionesEntity habitacionActualizada = repo.save(existente);
         //4. Convertir los datos a DTO y retornarlos

@@ -55,5 +55,8 @@ public class HabitacionesEntity {
     @Column(name = "CAPACIDADHABITACION")
     private int capacidadHabitacion;
 
+    @Column(name = "IMAGENHABITACION", length = 4000)
+    private String imagenHabitacion;
+
 
 }
