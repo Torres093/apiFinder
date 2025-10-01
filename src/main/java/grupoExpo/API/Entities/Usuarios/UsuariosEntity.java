@@ -40,4 +40,18 @@ public class UsuariosEntity {
 
     @Column(name = "GENEROUSUARIO")
     private char generoUsuario;
+
+    @Override
+    public String toString() {
+        return "UsuariosEntity{" +
+                "idUsuario='" + idUsuario + '\'' +
+                ", Rol=" + Rol +
+                ", nombreUsuario='" + nombreUsuario + '\'' +
+                ", correoUsuario='" + correoUsuario + '\'' +
+                ", contraseñaUsuario='" + contraseñaUsuario + '\'' +
+                ", segurityAnswerUsuario='" + segurityAnswerUsuario + '\'' +
+                ", imagenUsuario='" + imagenUsuario + '\'' +
+                ", generoUsuario=" + generoUsuario +
+                '}';
+    }
 }
