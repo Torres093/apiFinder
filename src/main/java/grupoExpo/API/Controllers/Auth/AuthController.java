@@ -8,6 +8,7 @@ import grupoExpo.API.Repositories.Usuarios.UsuariosRepository;
 import grupoExpo.API.Services.Auth.AuthService;
 import grupoExpo.API.Utils.JWTUtils;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,5 +137,24 @@ public class AuthController {
                             "message", "Error obteniendo datos de usuario"
                     ));
         }
+    }
+
+    @PostMapping("/authLogout")
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response){
+        //Crear cookie de expiración con SameSite=None
+        String cookieValue = "authToken=; Path=/; HttpOnly; Secure; SameSite=None; MaxAge=0; Domain=localhost:8080";
+
+        response.addHeader("Set-Cookie", cookieValue);
+        //response.addHeader("Access-Control-Allow-Credentials", "true");
+        response.addHeader("Access-Control-Expose-Headers", "Set-Cookie");
+
+        //También agregar headers CORS para la respuesta
+        String origin = request.getHeader("Origin");
+        if (origin != null &&
+                (origin.contains("localhost") || origin.contains("herokuapp.com"))){
+            response.setHeader("Access-Control-Allow-Origin", origin);
+        }
+        return ResponseEntity.ok()
+                .body("Logout exitoso");
     }
 }
