@@ -70,7 +70,7 @@ public class JwtCookieAuthFilter extends OncePerRequestFilter {
             //Extraer el rol real del token
             String rol = jwtUtils.extractRol(token);
 
-            //Crear authorities basado en el rol real}
+            //Crear authorities basado en el rol real
             Collection<? extends GrantedAuthority> authorities =
                     Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + rol));
 

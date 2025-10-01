@@ -70,7 +70,7 @@ public class AuthController {
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
-            cookie.setMaxAge(86400);
+            cookie.setMaxAge(900);
             response.addCookie(cookie);
         }
     }
