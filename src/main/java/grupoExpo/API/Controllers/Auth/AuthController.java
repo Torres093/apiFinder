@@ -142,7 +142,7 @@ public class AuthController {
     @PostMapping("/authLogout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response){
         //Crear cookie de expiración con SameSite=None
-        String cookieValue = "authToken=; Path=/; HttpOnly; Secure; SameSite=None; MaxAge=0; Domain=localhost:8080";
+        String cookieValue = "authToken=; Path=/; HttpOnly; Secure; SameSite=None; MaxAge=0; Domain=localhost";
 
         response.addHeader("Set-Cookie", cookieValue);
         //response.addHeader("Access-Control-Allow-Credentials", "true");
