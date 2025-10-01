@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -86,7 +87,6 @@ public class AuthController {
                         ));
             }
 
-            // Manejar diferentes tipos de Principal
             String username;
             Collection<? extends GrantedAuthority> authorities;
 
@@ -100,7 +100,6 @@ public class AuthController {
             }
 
             Optional<UsuariosEntity> userOpt = service.obtenerUsuario(username);
-
             if (userOpt.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of(
@@ -111,25 +110,26 @@ public class AuthController {
 
             UsuariosEntity user = userOpt.get();
 
-            return ResponseEntity.ok(Map.of(
-                    "authenticated", true,
-                    "user", Map.of(
-                            "id", user.getIdUsuario(),
-                            "rol", user.getRol().getNombreRol(),
-                            "nombre", user.getNombreUsuario(),
-                            "correo", user.getCorreoUsuario(),
-                            "contraseña", user.getContraseñaUsuario(),
-                            "segurityAnswer", user.getSegurityAnswerUsuario(),
-                            "imagen", user.getImagenUsuario(),
-                            "genero", user.getGeneroUsuario(),
-                            "authorities", authorities.stream()
-                                    .map(GrantedAuthority::getAuthority)
-                                    .collect(Collectors.toList())
-                    )
-            ));
+            // Crear un HashMap para poder poner valores null
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("id", user.getIdUsuario());
+            userMap.put("rol", user.getRol().getNombreRol());
+            userMap.put("nombre", user.getNombreUsuario());
+            userMap.put("correo", user.getCorreoUsuario());
+            userMap.put("segurityAnswer", user.getSegurityAnswerUsuario());
+            userMap.put("imagen", user.getImagenUsuario()); // null permitido
+            userMap.put("genero", user.getGeneroUsuario());
+            userMap.put("authorities", authorities.stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList()));
+
+            Map<String, Object> responseMap = new HashMap<>();
+            responseMap.put("authenticated", true);
+            responseMap.put("user", userMap);
+
+            return ResponseEntity.ok(responseMap);
 
         } catch (Exception e) {
-            //log.error("Error en /me endpoint: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of(
                             "authenticated", false,
