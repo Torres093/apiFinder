@@ -27,9 +27,7 @@ import java.util.Collections;
 public class JwtCookieAuthFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(JwtCookieAuthFilter.class);
-
     private static final String AUTH_COOKIE_NAME = "authToken";
-
     private final JWTUtils jwtUtils;
 
     @Autowired
@@ -43,21 +41,30 @@ public class JwtCookieAuthFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        // Ignorar endpoints públicos
-        if (isPublicEndpoint(request)) {
+        String method = request.getMethod();
+        String path = request.getRequestURI();
+
+        // Permitir preflight OPTIONS siempre
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            response.setStatus(HttpServletResponse.SC_OK);
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = extractTokenFromCookies(request);
-
-        // Si no hay token → 401 Unauthorized
-        if (token == null || token.isBlank()) {
-            sendError(response, "Token no encontrado", HttpServletResponse.SC_UNAUTHORIZED);
+        // Ignorar endpoints públicos
+        if (isPublicEndpoint(path, method)) {
+            filterChain.doFilter(request, response);
             return;
         }
 
         try {
+            String token = extractTokenFromCookies(request);
+
+            if (token == null || token.isBlank()) {
+                sendError(response, "Token no encontrado", HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
             Claims claims = jwtUtils.parseToken(token);
             String rol = jwtUtils.extractRol(token);
 
@@ -72,7 +79,6 @@ public class JwtCookieAuthFilter extends OncePerRequestFilter {
                     );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
             filterChain.doFilter(request, response);
 
         } catch (ExpiredJwtException e) {
@@ -104,11 +110,9 @@ public class JwtCookieAuthFilter extends OncePerRequestFilter {
         response.getWriter().write(String.format("{\"error\": \"%s\", \"status\": %d}", message, status));
     }
 
-    private boolean isPublicEndpoint(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        String method = request.getMethod();
-        return (path.equals("/api/authLogin") && "POST".equals(method)) ||
-                (path.equals("/api/authRegister") && "POST".equals(method)) ||
-                (path.equals("/api/public/") && "GET".equals(method));
+    private boolean isPublicEndpoint(String path, String method) {
+        return ("/api/authLogin".equals(path) && "POST".equalsIgnoreCase(method)) ||
+                ("/api/authRegister".equals(path) && "POST".equalsIgnoreCase(method)) ||
+                ("/api/public/".equals(path) && "GET".equalsIgnoreCase(method));
     }
 }

@@ -11,16 +11,20 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     private final JwtCookieAuthFilter jwtCookieAuthFilter;
+    private final CorsConfigurationSource corsConfigurationSource;
 
-    public SecurityConfig(JwtCookieAuthFilter jwtCookieAuthFilter) {
+    public SecurityConfig(JwtCookieAuthFilter jwtCookieAuthFilter, CorsConfigurationSource corsConfigurationSource) {
         this.jwtCookieAuthFilter = jwtCookieAuthFilter;
+        this.corsConfigurationSource = corsConfigurationSource;
     }
+
 
     //Configuración de seguridad HTTP
     @Bean
@@ -29,13 +33,17 @@ public class SecurityConfig {
         http
                 //Csfr -> Son llamadas o donde se pueden hacer peticiones de origen desconocido
                 .csrf(csrf -> csrf.disable()) //Nuevo estilo lambda, deshabilita que la Api pueda ser llamada desde cualquier lugar
+                .cors(cors -> cors.configurationSource(corsConfigurationSource)) // <- Configura CORS aqui
                 .authorizeHttpRequests(auth -> auth // Cambia authorizeRequests por authorizeHttpRequests
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // <- Permite prefLight requests
                         .requestMatchers(HttpMethod.POST,
                                 "/api/authLogin",
                                 "/api/authRegister",
                                 "/api/authLogout")
                         .permitAll()
                         .requestMatchers("/api/authMe").authenticated()
+
+                        //Endpoints específicos
                         .requestMatchers("/api/testAdminOnly").hasRole("Administrador")
                         .requestMatchers("/api/textEmpleadoOnly").hasRole("Empleado")
                         .requestMatchers("/api/textClienteOnly").hasRole("Cliente")
@@ -43,6 +51,7 @@ public class SecurityConfig {
                 .sessionManagement(sess -> sess
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtCookieAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
