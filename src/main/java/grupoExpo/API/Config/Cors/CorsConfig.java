@@ -23,6 +23,7 @@ public class CorsConfig {
         config.addAllowedOrigin("http://localhost"); //Para desarrollo
         config.addAllowedOrigin("http://localhost:5502");
         config.addAllowedOrigin("http://localhost:8080");
+        config.addAllowedOrigin("https://finder-2025-5583ee7dd52f.herokuapp.com");
 
         //Metodos permitidos
         config.addAllowedMethod("GET");
@@ -66,6 +67,7 @@ public class CorsConfig {
         configuration.addAllowedOrigin("https://localhost");
         configuration.addAllowedOrigin("http://localhost");
         configuration.addAllowedOrigin("https://*.herokuapp.com");
+        configuration.addAllowedOrigin("https://finder-2025-5583ee7dd52f.herokuapp.com");
         configuration.addAllowedOrigin("https://learn-api-steel.vercel.app/");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
