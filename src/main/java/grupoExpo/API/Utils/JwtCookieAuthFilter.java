@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 
 @Component
 public class JwtCookieAuthFilter extends OncePerRequestFilter {
@@ -47,12 +48,14 @@ public class JwtCookieAuthFilter extends OncePerRequestFilter {
         // Permitir preflight OPTIONS siempre
         if ("OPTIONS".equalsIgnoreCase(method)) {
             response.setStatus(HttpServletResponse.SC_OK);
+            setNoCacheHeaders(response);
             filterChain.doFilter(request, response);
             return;
         }
 
         // Ignorar endpoints públicos
         if (isPublicEndpoint(path, method)) {
+            setNoCacheHeaders(response);
             filterChain.doFilter(request, response);
             return;
         }
@@ -68,6 +71,18 @@ public class JwtCookieAuthFilter extends OncePerRequestFilter {
             Claims claims = jwtUtils.parseToken(token);
             String rol = jwtUtils.extractRol(token);
 
+            // RENOVAR TOKEN SI ESTÁ POR EXPIRAR
+            if (shouldRefreshToken(claims)) {
+                String nuevoToken = jwtUtils.create(claims.getId(), claims.getSubject(), rol);
+                Cookie nuevaCookie = new Cookie("authToken", nuevoToken);
+                nuevaCookie.setHttpOnly(true);
+                nuevaCookie.setSecure(true);
+                nuevaCookie.setPath("/");
+                nuevaCookie.setMaxAge(900); // 15 minutos
+                response.addCookie(nuevaCookie);
+            }
+
+
             Collection<? extends GrantedAuthority> authorities =
                     Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + rol));
 
@@ -79,6 +94,7 @@ public class JwtCookieAuthFilter extends OncePerRequestFilter {
                     );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            setNoCacheHeaders(response);
             filterChain.doFilter(request, response);
 
         } catch (ExpiredJwtException e) {
@@ -115,4 +131,22 @@ public class JwtCookieAuthFilter extends OncePerRequestFilter {
                 ("/api/authRegister".equals(path) && "POST".equalsIgnoreCase(method)) ||
                 ("/api/public/".equals(path) && "GET".equalsIgnoreCase(method));
     }
+
+    //Recargar token si está a punto de expirar
+    private boolean shouldRefreshToken(Claims claims) {
+        Date expiration = claims.getExpiration();
+        long now = System.currentTimeMillis();
+        long timeLeft = expiration.getTime() - now;
+
+        // Si faltan menos de 5 minutos (300000 ms), renovar
+        return timeLeft < 5 * 60 * 1000;
+    }
+
+    private void setNoCacheHeaders(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+        response.setHeader("Surrogate-Control", "no-store");
+    }
+
 }
