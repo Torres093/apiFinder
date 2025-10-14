@@ -1,5 +1,6 @@
 package grupoExpo.API.Services.Usuarios;
 
+import grupoExpo.API.Config.Argon2Password;
 import grupoExpo.API.Entities.Roles.RolesEntity;
 import grupoExpo.API.Entities.Usuarios.UsuariosEntity;;
 import grupoExpo.API.Exceptions.Roles.ExcepcionRolNoEncontrado;
@@ -25,6 +26,9 @@ public class UsuariosService {
 
     @Autowired
     private RolesRepository repoRoles;
+
+    @Autowired
+    private Argon2Password argon2;
 
     public Page<UsuariosDTO> getAllUsuarios(int page, int size){
         Pageable pageable = PageRequest.of(page, size); //Creación de la página.
@@ -78,7 +82,7 @@ public class UsuariosService {
         //Asignando atributos de DTO a entity
         entity.setNombreUsuario(data.getNombreUsuario());
         entity.setCorreoUsuario(data.getCorreoUsuario());
-        entity.setContraseñaUsuario(data.getContraseñaUsuario());
+        entity.setContraseñaUsuario(argon2.EncryptPassword(data.getContraseñaUsuario()));
         entity.setSegurityAnswerUsuario(data.getSegurityAnswerUsuario());
         entity.setImagenUsuario(data.getImagenUsuario());
         entity.setGeneroUsuario(data.getGeneroUsuario());
