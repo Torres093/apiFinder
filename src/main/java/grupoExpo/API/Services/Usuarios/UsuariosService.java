@@ -104,7 +104,7 @@ public class UsuariosService {
         //Asignando atributos de DTO a entity
         existente.setNombreUsuario(json.getNombreUsuario());
         existente.setCorreoUsuario(json.getCorreoUsuario());
-        existente.setContraseñaUsuario(json.getContraseñaUsuario());
+        existente.setContraseñaUsuario(argon2.EncryptPassword(json.getContraseñaUsuario()));
         existente.setSegurityAnswerUsuario(json.getSegurityAnswerUsuario());
         existente.setImagenUsuario(json.getImagenUsuario());
         existente.setGeneroUsuario(json.getGeneroUsuario());
